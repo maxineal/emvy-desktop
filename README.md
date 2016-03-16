@@ -1,1 +1,3 @@
-# emvy-desktop
+# Emvy Desktop
+
+Bronnikov Maxim, 2016
