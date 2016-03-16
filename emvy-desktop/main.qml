@@ -2,7 +2,10 @@ import QtQuick 2.0
 import QtQuick.Controls 1.2
 import QtWebKit 3.0
 
+import "main.js" as Main
+
 ApplicationWindow {
+    id: root
     visible: true
     width: 640
     height: 480
@@ -12,9 +15,9 @@ ApplicationWindow {
 
     menuBar: MenuBar {
         Menu {
-            title: qsTr("File")
+            title: qsTr("Работа")
             MenuItem {
-                text: qsTr("&Open")
+                text: qsTr("&Системы счисления")
                 onTriggered: console.log("Open action triggered");
             }
             MenuItem {
@@ -22,14 +25,30 @@ ApplicationWindow {
                 onTriggered: Qt.quit();
             }
         }
-    }
-/*
-    ScrollView {
-        anchors.fill: parent
-        WebView {
-            anchors.fill: parent
-            url: "http://emvy.tk/translating"
+        Menu {
+            title: qsTr("Режим")
+            MenuItem {
+                id: mode_student
+                text: qsTr("&Студент")
+                checkable: true
+                checked: true
+                onTriggered: Main.switchMode(0);
+            }
+            MenuItem {
+                id: mode_teacher
+                text: qsTr("&Преподаватель")
+                checkable: true
+                onTriggered: Main.switchMode(1);
+            }
         }
-    }*/
+    }
+
+    ScrollView {
+        id: main_layout
+        anchors.fill: parent
+
+        // Загрузка начального экрана
+        Component.onCompleted: Main.selectQml("translateform.qml");
+    }
 }
 

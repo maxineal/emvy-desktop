@@ -12,3 +12,5 @@ unix:!android {
 
 export(INSTALLS)
 
+DISTFILES +=
+
