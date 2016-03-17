@@ -5,6 +5,8 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
+    QLocale::setDefault(QLocale::c());
+
     QQmlApplicationEngine engine;
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 

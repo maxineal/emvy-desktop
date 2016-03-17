@@ -4,5 +4,7 @@
         <file>main.js</file>
         <file>startwindow.qml</file>
         <file>translateform.qml</file>
+        <file>translate.js</file>
+        <file>stateData.js</file>
     </qresource>
 </RCC>

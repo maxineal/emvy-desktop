@@ -1,12 +1,18 @@
 
 import QtQuick 2.0
 import QtQuick.Controls 1.2
+import QtQuick.Layouts 1.1
+import QtQuick.Controls.Styles 1.2
+
+import "main.js" as Main
+import "stateData.js" as State
+import "translate.js" as Translate
 
 Item {
     id: main
     anchors.fill: parent
 
-    Row {
+    Item {
         id: row1
         height: item1.height
         anchors.top: parent.top
@@ -25,9 +31,13 @@ Item {
             }
 
             TextField {
+                id: number
                 placeholderText: qsTr("Число")
                 anchors.left: parent.left
                 anchors.right: parent.right
+                validator: DoubleValidator {bottom: 0;}
+
+                text: "77.12213213213213232131316511"
             }
         }
 
@@ -44,8 +54,11 @@ Item {
             }
 
             ComboBox {
+                id: fromBase
                 anchors.left: parent.left
                 anchors.right: parent.right
+                model: Main.getBases();
+                currentIndex: 6
             }
         }
 
@@ -62,8 +75,11 @@ Item {
             }
 
             ComboBox {
+                id: toBase
                 anchors.left: parent.left
                 anchors.right: parent.right
+                model: Main.getBases();
+                currentIndex: 0
             }
         }
 
@@ -80,18 +96,57 @@ Item {
             }
 
             TextField {
+                id: accuracy
                 placeholderText: qsTr("Точность")
                 anchors.left: parent.left
                 anchors.right: parent.right
+                text: "5"
+                inputMask: "90"
+                validator: IntValidator {bottom: 0; top: 20}
             }
         }
     }
 
     Button {
+        id: btn_translate
         text: qsTr("Перевести")
         anchors.right: parent.right
         anchors.rightMargin: 5
         anchors.top: row1.bottom
         anchors.topMargin: 5
+
+        onClicked: Translate.translate();
+    }
+
+    ScrollView {
+        id: scrollView
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: btn_translate.bottom
+        anchors.bottom: parent.bottom
+        anchors.margins: 3
+
+        ColumnLayout {
+            id: scrollArea
+            anchors.left: parent.left
+            width: children.width;
+            height: children.height + 20;
+
+            Text {
+                id: label_answer
+                text: qsTr("Ответ:")
+                font.bold: false
+                visible: false
+                textFormat: Text.AutoText
+            }
+
+            Text {
+                id: label_short_decision
+                text: ""
+                wrapMode: Text.Wrap
+                visible: false
+                textFormat: Text.RichText
+            }
+        }
     }
 }
