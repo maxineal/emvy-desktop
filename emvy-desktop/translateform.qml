@@ -124,7 +124,8 @@ Item {
         anchors.right: parent.right
         anchors.top: btn_translate.bottom
         anchors.bottom: parent.bottom
-        anchors.margins: 3
+        anchors.margins: 5
+        anchors.topMargin: 2
 
         ColumnLayout {
             id: scrollArea

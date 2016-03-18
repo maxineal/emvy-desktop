@@ -13,10 +13,3 @@ function selectQml(layoutName)
     var object = component.createObject(main_layout);
 }
 
-function getBases()
-{
-    var bases = [];
-    for(var i = 2; i <= 36; i++) bases.push(i);
-    return bases;
-}
-
