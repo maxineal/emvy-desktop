@@ -15,6 +15,7 @@ function translate()
     {
 
     }
+    gc();
 }
 
 function shortTranslate()
@@ -22,18 +23,18 @@ function shortTranslate()
     label_short_decision.visible = true;
 
     var $n = number.text.replace(',', '.');
-    var $fromBase = fromBase.currentIndex + 2;
-    var $toBase = toBase.currentIndex + 2;
-    var $accuracy = accuracy.text;
+    var $fromBase = fromBase.value;
+    var $toBase = toBase.value;
+    var $accuracy = accuracy.value;
 
     // перевод числа в десятичную СС
-    if($fromBase != 10) {
+    if($fromBase !== 10) {
         var tmp = 0;
         var currentN = 0;
         var dotPos = $n.indexOf('.');
         if(dotPos > -1) currentN = dotPos - $n.length + 1;
         for(var i = $n.length - 1; i >= 0; i--) {
-            if(i == dotPos) continue;
+            if(i === dotPos) continue;
             tmp += getNumber($n.substr(i, 1)) * Math.pow($fromBase, currentN);
             currentN++;
         }
@@ -42,7 +43,7 @@ function shortTranslate()
 
     // перевод числа в нужную СС
     var $result = $n;
-    if($toBase != 10) {
+    if($toBase !== 10) {
         var decimalResult = "";
         var decimal = (~~$n);
         while(decimal > 0) {
@@ -85,6 +86,6 @@ function getBasedNumber(a, b)
 
 function validateForm()
 {
-    if(number.text.length == 0) return false;
+    if(number.text.length === 0) return false;
     return true;
 }

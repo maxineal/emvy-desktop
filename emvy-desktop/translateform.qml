@@ -1,6 +1,6 @@
 
 import QtQuick 2.0
-import QtQuick.Controls 1.0
+import QtQuick.Controls 1.2
 import QtQuick.Layouts 1.1
 
 import "main.js" as Main
@@ -52,36 +52,15 @@ Item {
                 text: qsTr("Основание")
                 anchors.left: parent.left
             }
-/*
-            Row {
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.top: label_fromBase.bottom
 
-                Slider {
-                    id: fromBase
-                    anchors.left: parent.left
-                    anchors.right: fromBaseHint.left
-                    anchors.rightMargin: 2
-                    minimumValue: 2
-                    maximumValue: 36
-                    stepSize: 1
-                    onValueChanged: fromBaseHint.text = text;
-                }
-
-                Text {
-                    id: fromBaseHint
-                    text: fromBase.value
-                    anchors.right: parent.right
-                }
-            }*/
-
-            ComboBox {
+            SpinBox {
                 id: fromBase
                 anchors.left: parent.left
                 anchors.right: parent.right
-                model: [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36]
-                currentIndex: 6
+                minimumValue: 2
+                maximumValue: 36
+                stepSize: 1
+                value: 8
             }
         }
 
@@ -97,37 +76,15 @@ Item {
                 text: qsTr("Конечное основание")
                 anchors.left: parent.left
             }
-/*
-            Row {
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.top: label_toBase.bottom
 
-                Slider {
-                    id: toBase
-                    anchors.left: parent.left
-                    anchors.right: toBaseHint.left
-                    anchors.rightMargin: 2
-                    minimumValue: 2
-                    maximumValue: 36
-                    stepSize: 1
-                    onValueChanged: toBaseHint.text = text;
-                }
-
-                Text {
-                    id: toBaseHint
-                    text: toBase.value
-                    anchors.right: parent.right
-                }
-            }*/
-
-
-            ComboBox {
+            SpinBox {
                 id: toBase
                 anchors.left: parent.left
                 anchors.right: parent.right
-                model: [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36]
-                currentIndex: 0
+                minimumValue: 2
+                maximumValue: 36
+                stepSize: 1
+                value: 16
             }
         }
 
@@ -143,13 +100,14 @@ Item {
                 anchors.left: parent.left
             }
 
-            TextField {
+            SpinBox {
                 id: accuracy
-                placeholderText: qsTr("Точность")
                 anchors.left: parent.left
                 anchors.right: parent.right
-                text: "5"
-                validator: IntValidator {bottom: 0; top: 20}
+                minimumValue: 0
+                maximumValue: 20
+                stepSize: 1
+                value: 5
             }
         }
     }

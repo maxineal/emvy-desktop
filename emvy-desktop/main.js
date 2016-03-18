@@ -7,9 +7,20 @@ function switchMode(modeId)
     mode_teacher.checked = !(mode_student.checked = (modeId === 0));
 }
 
+var component = null, object = null;
+
 function selectQml(layoutName)
 {
-    var component = Qt.createComponent("qrc:/" + layoutName);
-    var object = component.createObject(main_layout);
+    clearLayout();
+    component = Qt.createComponent("qrc:/" + layoutName);
+    object = component.createObject(main_layout);
 }
+
+function clearLayout()
+{
+    if(object !== null) object.destroy();
+    if(component !== null) component.destroy();
+    component = object = null;
+}
+
 

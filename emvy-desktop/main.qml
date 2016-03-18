@@ -18,8 +18,13 @@ ApplicationWindow {
             title: qsTr("Работа")
             MenuItem {
                 text: qsTr("&Системы счисления")
-                onTriggered: console.log("Open action triggered");
+                onTriggered: Main.selectQml("translateform.qml");
             }
+            MenuItem {
+                text: qsTr("&Очистка")
+                onTriggered: Main.clearLayout();
+            }
+
             MenuItem {
                 text: qsTr("Exit")
                 onTriggered: Qt.quit();
