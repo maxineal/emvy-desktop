@@ -43,7 +43,7 @@ ApplicationWindow {
         }
     }
 
-    ScrollView {
+    Item {
         id: main_layout
         anchors.fill: parent
 
