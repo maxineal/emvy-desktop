@@ -36,7 +36,7 @@ Item {
                 anchors.right: parent.right
                 validator: DoubleValidator {bottom: 0;}
 
-                text: "77.12213213213213232131316511"
+                text: "77.1221"
             }
         }
 
@@ -156,10 +156,11 @@ Item {
 
             Text {
                 id: label_decision_text
-                text: qsTr("Решение:")
+                text: qsTr("<b>Решение:</b>")
                 visible: false
                 anchors.top: label_short_decision.bottom
                 anchors.topMargin: 10
+                textFormat: Text.RichText
             }
 
             Text {
@@ -171,6 +172,18 @@ Item {
                 id: label_translateTo10
                 visible: false
                 textFormat: Text.RichText
+            }
+
+            Text {
+                id: label_translateFrom10_text
+                anchors.top: label_translateTo10.bottom
+                anchors.topMargin: 10
+                visible: false
+            }
+
+            Text {
+                id: label_translateFrom10_divide_int_text
+                visible: false
             }
         }
     }
