@@ -6,5 +6,6 @@
         <file>translateform.qml</file>
         <file>translate.js</file>
         <file>stateData.js</file>
+        <file>strings.js</file>
     </qresource>
 </RCC>

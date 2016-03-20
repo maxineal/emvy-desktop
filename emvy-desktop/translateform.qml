@@ -139,7 +139,7 @@ Item {
             height: children.height + 20;
 
             Text {
-                id: label_answer
+                id: label_answer_text
                 text: qsTr("Ответ:")
                 font.bold: false
                 visible: false
@@ -150,6 +150,25 @@ Item {
                 id: label_short_decision
                 text: ""
                 wrapMode: Text.Wrap
+                visible: false
+                textFormat: Text.RichText
+            }
+
+            Text {
+                id: label_decision_text
+                text: qsTr("Решение:")
+                visible: false
+                anchors.top: label_short_decision.bottom
+                anchors.topMargin: 10
+            }
+
+            Text {
+                id: label_translateTo10_text
+                visible: false
+            }
+
+            Text {
+                id: label_translateTo10
                 visible: false
                 textFormat: Text.RichText
             }
