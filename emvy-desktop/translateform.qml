@@ -34,7 +34,7 @@ Item {
                 placeholderText: qsTr("Число")
                 anchors.left: parent.left
                 anchors.right: parent.right
-                validator: DoubleValidator {bottom: 0;}
+                //validator: DoubleValidator {bottom: 0;}
 
                 text: "77.1221"
             }
@@ -184,6 +184,37 @@ Item {
             Text {
                 id: label_translateFrom10_divide_int_text
                 visible: false
+            }
+
+            Grid {
+                id: grid_translateFrom10_divide_int
+                visible: false
+                columns: 2
+                spacing: 4
+            }
+
+            Text {
+                id: label_translateFrom10_divide_int_result
+                visible: false
+                textFormat: Text.RichText
+            }
+
+            Text {
+                id: label_translateFrom10_decimal_text
+                visible: false
+            }
+
+            Grid {
+                id: list_translateFrom10_decimal
+                visible: false
+                columns: 3
+            }
+
+            Text {
+                id: label_answer
+                visible: false
+                anchors.bottomMargin: 20
+                textFormat: Text.RichText
             }
         }
     }

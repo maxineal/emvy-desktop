@@ -8,4 +8,7 @@
         <file>stateData.js</file>
         <file>strings.js</file>
     </qresource>
+    <qresource prefix="/components">
+        <file>textcomponent.qml</file>
+    </qresource>
 </RCC>
