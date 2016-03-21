@@ -1,6 +1,6 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.2
-import QtWebKit 3.0
+import QtQuick.Dialogs 1.1
 
 import "main.js" as Main
 
@@ -55,5 +55,7 @@ ApplicationWindow {
         // Загрузка начального экрана
         Component.onCompleted: Main.selectQml("translateform.qml");
     }
+
+
 }
 

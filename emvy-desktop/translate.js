@@ -1,16 +1,17 @@
 
 .import "stateData.js" as State
 .import "strings.js" as Strings
+.import QtQuick.Dialogs 1.1
 
 function translate()
 {
     if(!validateForm()) return false; // TODO: уведомление о неправильных данных
-    console.time("translate");
+    //console.time("translate");
     clearField();
     makeTranslate();
     prepareView();
     gc();
-    console.timeEnd("translate");
+    //console.timeEnd("translate");
     return true;
 }
 

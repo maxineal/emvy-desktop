@@ -25,4 +25,8 @@ function clearLayout()
     component = object = null;
 }
 
+function MsgBox(informativeText, detailedText, icon, buttons)
+{
+}
+
 
