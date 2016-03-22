@@ -1,25 +1,31 @@
 
+.import "main.js" as Main
 .import "stateData.js" as State
 .import "strings.js" as Strings
-.import QtQuick.Dialogs 1.1
 
 function translate()
 {
-    if(!validateForm()) return false; // TODO: уведомление о неправильных данных
-    //console.time("translate");
+    if(!validateForm()) return false;
     clearField();
     makeTranslate();
     prepareView();
     gc();
-    //console.timeEnd("translate");
     return true;
 }
 
 // Валидация данных
 function validateForm()
 {
-    if(number.text.length === 0) return false;
-    if(!isCorrectNumber(number.text, fromBase.value)) return false;
+    if(number.text.length === 0) {
+        Main.msgBox("Введите число.");
+        return false;
+    }
+    if(!isCorrectNumber(number.text.replace(',', '.'), fromBase.value)) {
+        Main.msgBox("Число введено неправильно.", {
+                        details: "Возможно, вы ввели число неправильно или выбрано неверное основание."
+                    });
+        return false;
+    }
     return true;
 }
 
@@ -202,11 +208,18 @@ function getBasedNumber(a, b)
 function isCorrectNumber(n, base)
 {
     var s = n.toString();
-    var b = base !== null ? parseInt(base) : 10;
+    var b = (typeof base !== "undefined") ? parseInt(base) : 10;
     var currentN = 0;
+    var dot = false;
     for(var i = 0; i < s.length; i++) {
-        currentN = getNumber(s.substr(i, 1));
-        if(isNaN(currentN) && currentN >= b) return false;
+        currentN = s.substr(i, 1);
+        if(currentN === ".") {
+            if(dot) return false; // уже была точка
+            dot = true; // только сейчас точка
+            continue;
+        }
+        currentN = getNumber(currentN);
+        if(isNaN(currentN) || currentN >= b) return false;
     }
     return true;
 }

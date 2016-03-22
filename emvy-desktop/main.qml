@@ -1,6 +1,7 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.2
-import QtQuick.Dialogs 1.1
+import QtQuick.Layouts 1.1
+import QtQuick.Dialogs 1.2
 
 import "main.js" as Main
 
@@ -56,6 +57,18 @@ ApplicationWindow {
         Component.onCompleted: Main.selectQml("translateform.qml");
     }
 
+    /***
+      Qt Creater ругался на неправильные поля.
+      Но все работает.
+      */
+    MessageDialog {
+        id: messageDialogSimple
+        title: qsTr("Emvy Desktop")
+    }
 
+    MessageDialog {
+        id: messageDialogDetailed
+        title: qsTr("Emvy Desktop")
+    }
 }
 

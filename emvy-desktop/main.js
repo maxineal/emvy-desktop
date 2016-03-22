@@ -25,8 +25,28 @@ function clearLayout()
     component = object = null;
 }
 
-function MsgBox(informativeText, detailedText, icon, buttons)
+function msgBox(text, data)
 {
+    var hasData = false;
+    var object = messageDialogSimple;
+    if(typeof data === "object" && data !== null) {
+        hasData = true;
+        if(typeof data.details !== "undefined") {
+            object = messageDialogDetailed;
+            object.detailedText = data.details;
+        }
+    }
+
+    object.text = text;
+    object.icon = 2;
+
+    if(hasData) {
+        if(typeof data.icon !== "undefined") {
+            messageDialog.icon = data.icon;
+        }
+    }
+    object.open();
+    gc();
 }
 
 

@@ -158,8 +158,8 @@ Item {
                 id: label_decision_text
                 text: qsTr("<b>Решение:</b>")
                 visible: false
-                anchors.top: label_short_decision.bottom
-                anchors.topMargin: 10
+                //anchors.top: label_short_decision.bottom
+                anchors.topMargin: 20
                 textFormat: Text.RichText
             }
 
@@ -176,7 +176,7 @@ Item {
 
             Text {
                 id: label_translateFrom10_text
-                anchors.top: label_translateTo10.bottom
+                //anchors.top: label_translateTo10.bottom
                 anchors.topMargin: 10
                 visible: false
             }
@@ -190,7 +190,7 @@ Item {
                 id: grid_translateFrom10_divide_int
                 visible: false
                 columns: 2
-                spacing: 4
+                spacing: 6
             }
 
             Text {
