@@ -22,6 +22,11 @@ ApplicationWindow {
                 onTriggered: Main.selectQml("translateform.qml");
             }
             MenuItem {
+                text: qsTr("&Арифметика")
+                onTriggered: Main.selectQml("arithmetic.qml");
+            }
+
+            MenuItem {
                 text: qsTr("&Очистка")
                 onTriggered: Main.clearLayout();
             }
@@ -54,7 +59,7 @@ ApplicationWindow {
         anchors.fill: parent
 
         // Загрузка начального экрана
-        Component.onCompleted: Main.selectQml("translateform.qml");
+        Component.onCompleted: Main.selectQml("arithmetic.qml");
     }
 
     /***

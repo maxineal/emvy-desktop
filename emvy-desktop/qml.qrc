@@ -7,6 +7,7 @@
         <file>translate.js</file>
         <file>stateData.js</file>
         <file>strings.js</file>
+        <file>arithmetic.qml</file>
     </qresource>
     <qresource prefix="/components">
         <file>textcomponent.qml</file>
