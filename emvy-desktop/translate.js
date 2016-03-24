@@ -2,6 +2,7 @@
 .import "main.js" as Main
 .import "stateData.js" as State
 .import "strings.js" as Strings
+.import "tools.js" as Tools
 
 function translate()
 {
@@ -20,7 +21,7 @@ function validateForm()
         Main.msgBox("Введите число.");
         return false;
     }
-    if(!isCorrectNumber(number.text.replace(',', '.'), fromBase.value)) {
+    if(!Tools.isNumber(number.text.replace(',', '.'), fromBase.value)) {
         Main.msgBox("Число введено неправильно.", {
                         details: "Возможно, вы ввели число неправильно или выбрано неверное основание."
                     });
@@ -52,7 +53,7 @@ function makeTranslate()
         if(dotPos > -1) currentN = dotPos - $n.length + 1;
         for(var i = $n.length - 1; i >=0; i--) {
             if(i === dotPos) continue;
-            var currentNumber = getNumber($n.substr(i, 1));
+            var currentNumber = Tools.getNumber($n.substr(i, 1));
             if($teacher) {
                 label_translateTo10.text += currentNumber + ' * ' + $fromBase + "<sup>" + currentN + "</sup>";
                 if(i !== 0) label_translateTo10.text += "&nbsp;+&nbsp;";
@@ -85,7 +86,7 @@ function makeTranslate()
         var destBaseResult = "";
         var basedNumber = "";
         while(intPart > 0) {
-            basedNumber = getBasedNumber(intPart % $toBase, $toBase);
+            basedNumber = Tools.getBasedNumber(intPart % $toBase, $toBase);
             if($teacher) {
                 object = component.createObject(grid_translateFrom10_divide_int);
                 object.text = intPart;
@@ -98,7 +99,6 @@ function makeTranslate()
             destBaseResult += basedNumber;
             intPart = ~~(intPart / $toBase);
         }
-
 
         // переворачиваем число
         destBaseResult = destBaseResult.split('').reverse().join('');
@@ -128,7 +128,7 @@ function makeTranslate()
 
                 fraction *= $toBase;
                 partedFraction = ~~fraction;
-                destBaseResult += getBasedNumber(partedFraction, $toBase);
+                destBaseResult += Tools.getBasedNumber(partedFraction, $toBase);
                 fraction = fraction - partedFraction;
                 if($teacher) {
                     object = component.createObject(list_translateFrom10_decimal);
@@ -189,37 +189,4 @@ function prepareView()
     label_translateFrom10_decimal_text.visible =
             list_translateFrom10_decimal.visible =
             ((toBase !== 10) && $teacher && number.text.indexOf('.') > -1);
-}
-
-// Возвращает число в 36 основании
-function getNumber(a)
-{
-    if(!isNaN(a)) return a;
-    return parseInt(a, 36);
-}
-
-// Возвращает символ числового эквивалента
-function getBasedNumber(a, b)
-{
-    return a.toString(b);
-}
-
-// Проверяет число
-function isCorrectNumber(n, base)
-{
-    var s = n.toString();
-    var b = (typeof base !== "undefined") ? parseInt(base) : 10;
-    var currentN = 0;
-    var dot = false;
-    for(var i = 0; i < s.length; i++) {
-        currentN = s.substr(i, 1);
-        if(currentN === ".") {
-            if(dot) return false; // уже была точка
-            dot = true; // только сейчас точка
-            continue;
-        }
-        currentN = getNumber(currentN);
-        if(isNaN(currentN) || currentN >= b) return false;
-    }
-    return true;
 }

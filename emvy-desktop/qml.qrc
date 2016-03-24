@@ -1,13 +1,15 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
-        <file>main.js</file>
         <file>startwindow.qml</file>
         <file>translateform.qml</file>
+        <file>arithmetic.qml</file>
+        <file>main.js</file>
         <file>translate.js</file>
         <file>stateData.js</file>
         <file>strings.js</file>
-        <file>arithmetic.qml</file>
+        <file>arithmetic.js</file>
+        <file>tools.js</file>
     </qresource>
     <qresource prefix="/components">
         <file>textcomponent.qml</file>
