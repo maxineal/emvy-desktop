@@ -12,7 +12,7 @@ function get(scope, id)
     if(str.length > 0) {
         if(arguments.length > 2) {
             for(var i = 0; i < arguments.length - 2; i++) {
-                str = str.replace("{" + i + "}", arguments[i + 2]);
+                str = str.replace(new RegExp("{" + i + "}", 'g'), arguments[i + 2]);
             }
         }
     }
@@ -23,7 +23,11 @@ function printf(str)
 {
     if(arguments.length > 1) {
         for(var i = 0; i < arguments.length - 1; i++) {
-            str = str.replace("{" + i + "}", arguments[i + 1]);
+            try {
+                str = str.split('{' + i + '}').join(arguments[i + 1]);
+            } catch(e) {
+                console.log("Exception in printf. Message: " + e.message);
+            }
         }
     }
     return str;
