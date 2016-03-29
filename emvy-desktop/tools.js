@@ -16,7 +16,7 @@ function getBasedNumber(n, base)
     return n.toString(base);
 }
 
-function toDecimal(n, base)
+function toDecimal(n, base, accuracy)
 {
     if(base === 10) return n;
     var result = 0;
@@ -29,12 +29,22 @@ function toDecimal(n, base)
         result += currentNumber * Math.pow(base, currentN);
         currentN++;
     }
+    if(isDefined(accuracy)) {
+        if(result.toString().indexOf('.') > -1) {
+            result = result.toFixed(accuracy);
+        }
+    }
     return parseFloat(result);
 }
 
 function fromDecimal(n, base, accuracy)
 {
-    if(base === 10) return n;
+    if(base === 10) {
+        if(n.toString().indexOf('.') > -1) {
+            return n.toFixed(accuracy);
+        }
+        return n;
+    }
     var acc = isDefined(accuracy) ? accuracy : 5;
     var intPart = (~~n);
     var destBaseResult = "";
@@ -100,5 +110,12 @@ function isNumber(n, base, options)
         if(isNaN(c) || c >= base) return false;
     }
     return true;
+}
+
+function deleteChildren(obj)
+{
+    for(var i = 0; i < obj.children.length; i++) {
+        obj.children[i].destroy();
+    }
 }
 

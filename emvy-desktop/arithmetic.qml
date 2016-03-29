@@ -1,7 +1,7 @@
 
 import QtQuick 2.0
 import QtQuick.Controls 1.2
-import QtQuick.Layouts 1.1
+import QtQuick.Layouts 1.2
 
 import "main.js" as Main
 import "stateData.js" as State
@@ -177,6 +177,81 @@ Item {
                 visible: false
                 textFormat: Text.RichText
             }
+
+            Text {
+                id: label_decision_text
+                text: qsTr("<b>Решение:</b>")
+                visible: false
+                anchors.topMargin: 20
+                textFormat: Text.RichText
+            }
+
+            Text {
+                id: label_showAs_text
+                visible: false
+                textFormat: Text.RichText
+            }
+
+            ColumnLayout {
+                id: column_add_substract
+                visible: true
+
+                Row {
+                    id: basedNumber1
+                    Layout.alignment: Qt.AlignRight
+                }
+
+                Row {
+                    id: basedNumber2
+                    Layout.alignment: Qt.AlignRight
+                }
+
+                Row {
+                    id: basedResult
+                    Layout.alignment: Qt.AlignRight
+
+                }
+            }
+
+            /*
+            Row {
+                Text {
+                    text: '+'
+                    anchors.top: parent.top
+                    anchors.topMargin: grid_addition_substract.height / 3;
+                }
+
+                Grid {
+                    id: grid_addition_substract
+                    rows: 3
+                    spacing: 3
+                    //visible: false
+
+                    Text {
+                        text: '0'
+                    }
+
+                    Text {
+                        text: '0'
+                    }
+
+                    Text {
+                        text: '0'
+                    }
+
+                    Text {
+                        text: '2'
+                    }
+
+                    Text {
+                        text: '2'
+                    }
+
+                    Text {
+                        text: '2'
+                    }
+                }
+            }*/
         }
     }
 }

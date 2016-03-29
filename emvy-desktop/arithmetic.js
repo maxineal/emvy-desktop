@@ -14,12 +14,22 @@ function execute()
     console.timeEnd("execute");
 }
 
+// Подготовка вида
 function prepareView()
 {
     label_answer_text.visible = true;
     label_short_decision.visible = true;
 
+    if(State.mode !== 'student') {
+        label_decision_text.visible = true;
 
+        label_showAs_text.visible = (num1_base.value !== num2_base.value);
+
+        Tools.deleteChildren(basedNumber1);
+        Tools.deleteChildren(basedNumber2);
+        Tools.deleteChildren(basedResult);
+        //grid_addition_substract.visible = (action.currentIndex < 2); // сложение, вычитание
+    }
 }
 
 // Валидация
@@ -53,12 +63,18 @@ function makeOperation()
 
     // В какой системе производятся вычисления
     if(num1_base.value !== num2_base.value) {
-        if(mainbase.currentIndex === 0) {  
-            n2 = Tools.fromDecimal(Tools.toDecimal(n2, num2_base.value), num1_base.value);
+        if(mainbase.currentIndex === 0) {
+            n2 = Tools.fromDecimal(Tools.toDecimal(n2, num2_base.value), num1_base.value, 5);
+            label_showAs_text.text =
+                    Strings.printf("Число {0}<sub>{1}</sub> в {2}-ричной системе счисления: {3}<sub>{2}</sub>.",
+                                   num2.text, secondaryBase, primaryBase, n2);
         } else {
-            n1 = Tools.fromDecimal(Tools.toDecimal(n1, num1_base.value), num2_base.value);
+            n1 = Tools.fromDecimal(Tools.toDecimal(n1, num1_base.value), num2_base.value, 5);
             primaryBase = num2_base.value;
             secondaryBase = num1_base.value;
+            label_showAs_text.text =
+                    Strings.printf("Число {0}<sub>{1}</sub> в {2}-ричной системе счисления: {3}<sub>{2}</sub>.",
+                                   num1.text, secondaryBase, primaryBase, n1);
         }
     }
 
@@ -87,13 +103,15 @@ function addition(an, bn, base1, base2)
         b = Tools.isDefined(bn[i]) ? bn[i] : 0;
         if(!Tools.isDefined(result[i])) result[i] = 0;
         result[i] += (a + b);
-
         if(result[i] >= base1) {
             if(!Tools.isDefined()) {
                 result[i + 1] = 0;
             }
             result[i + 1] += 1;
             result[i] -= base1;
+            if(i + 1 > result.max) {
+                result.max = i + 1;
+            }
         }
     }
 
@@ -104,13 +122,43 @@ function addition(an, bn, base1, base2)
                            num2.text, num2_base.value,
                            resultInBase1, base1);
 
-    var resultInDec = Tools.toDecimal(resultInBase1, base1);
+    // если системы счисления не совпадают, вывести две
+    var resultInDec = Tools.toDecimal(resultInBase1, base1, 5);
     if(base1 !== base2) {
         text += " = " + Tools.fromDecimal(resultInDec, base2) +
                 "<sub>" + base2 + "</sub>";
     }
-    text += " = " + resultInDec + "<sub>10</sub>";
+
+    // переводим дополнительно в десятичную
+    if(base1 !== 10 && base2 !== 10) {
+        text += " = " + resultInDec + "<sub>10</sub>";
+    }
     label_short_decision.text = text;
+
+    if(State !== 'student') {
+        var component = Qt.createComponent("qrc:/components/textcomponent.qml");
+        var object;
+        var hasDot = false, dotNow = false;
+        min = Math.min(min, result.min);
+        max = Math.max(max, result.max);
+
+        for(var i = max; i >= min; i--) {
+            if(i === -1) {
+                component.createObject(basedNumber1).text = '.';
+                component.createObject(basedNumber2).text = '.';
+                component.createObject(basedResult).text = '.';
+            }
+
+            object = component.createObject(basedNumber1);
+            object.text = Tools.isDefined(an[i]) ? Tools.getBasedNumber(an[i], 36) : (i < an.min ? '0' : '');
+
+            object = component.createObject(basedNumber2);
+            object.text = Tools.isDefined(bn[i]) ? Tools.getBasedNumber(bn[i], 36) : (i < bn.min ? '0' : '');
+
+            object = component.createObject(basedResult);
+            object.text = Tools.isDefined(result[i]) ? Tools.getBasedNumber(result[i], 36) : (i < result.min ? '0' : '');
+         }
+    }
 }
 
 
@@ -147,8 +195,11 @@ function objectToFloat(obj, base)
         }
         n += Tools.getBasedNumber(obj[i], base);
     }
-    while(n.substr(n.length - 1, 1) === '0') {
-        n = n.substr(0, n.length - 1);
+    var dotPos = n.indexOf('.');
+    if(dotPos > -1) {
+        while(n.substr(n.length - 1, 1) === '0' || n.substr(n.length - 1, 1) === '.') {
+            n = n.substr(0, n.length - 1);
+        }
     }
     return n;
 }

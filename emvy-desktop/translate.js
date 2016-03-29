@@ -157,13 +157,8 @@ function makeTranslate()
 // Очищает поле
 function clearField()
 {
-    var i = 0;
-    for(i = 0; i < grid_translateFrom10_divide_int.children.length; i++) {
-        grid_translateFrom10_divide_int.children[i].destroy();
-    }
-    for(i = 0; i < list_translateFrom10_decimal.children.length; i++) {
-        list_translateFrom10_decimal.children[i].destroy();
-    }
+    Tools.deleteChildren(grid_translateFrom10_divide_int);
+    Tools.deleteChildren(list_translateFrom10_decimal);
 }
 
 // Обработка вида
