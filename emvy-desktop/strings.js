@@ -12,7 +12,11 @@ function get(scope, id)
     if(str.length > 0) {
         if(arguments.length > 2) {
             for(var i = 0; i < arguments.length - 2; i++) {
-                str = str.replace(new RegExp("{" + i + "}", 'g'), arguments[i + 2]);
+                try {
+                    str = str.split('{' + i + '}').join(arguments[i + 2]);
+                } catch(e) {
+                    console.log("Exception in get. Message: " + e.message);
+                }
             }
         }
     }

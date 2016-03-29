@@ -12,6 +12,7 @@ function execute()
         makeOperation();
     }
     console.timeEnd("execute");
+    gc();
 }
 
 // Подготовка вида
