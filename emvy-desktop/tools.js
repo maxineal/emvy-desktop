@@ -8,6 +8,7 @@ function isDefined(obj)
 
 function getNumber(n, base)
 {
+    if(!isDefined(n)) n = 0;
     return parseInt(n, isDefined(base) ? base : 36);
 }
 
@@ -21,6 +22,8 @@ function toDecimal(n, base, accuracy)
     if(base === 10) return n;
     var result = 0;
     var currentN = 0;
+
+    n = n.toString();
     var dotPos = n.indexOf('.');
     if(dotPos > -1) currentN = dotPos - n.length + 1;
     for(var i = n.length - 1; i >= 0; i--) {
@@ -117,5 +120,29 @@ function deleteChildren(obj)
     for(var i = 0; i < obj.children.length; i++) {
         obj.children[i].destroy();
     }
+}
+
+// Клонирует объект
+function cloneObject(obj)
+{
+    if(obj === null || typeof obj !== 'object') return obj;
+    var copy = {};
+    for (var attr in obj) {
+        if(obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
+    }
+    return copy;
+}
+
+
+function basedAdd(a, b, base)
+{
+    console.log(123);
+}
+
+function basedSub(a, b, base)
+{
+    var ab = toDecimal(a, base);
+    var bb = toDecimal(b, base);
+    return fromDecimal(toDecimal(a, base) - toDecimal(b, base), base);
 }
 

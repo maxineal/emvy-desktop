@@ -14,7 +14,11 @@ function selectQml(layoutName)
 {
     clearLayout();
     component = Qt.createComponent("qrc:/" + layoutName);
-    object = component.createObject(main_layout);
+    if(component.status !== 1) {
+        if(component.status === 3) console.debug("Component is not ready: (" + component.errorString() + ")");
+    } else {
+        object = component.createObject(main_layout);
+    }
     gc();
 }
 

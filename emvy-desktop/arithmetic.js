@@ -4,6 +4,8 @@
 .import "strings.js" as Strings
 .import "tools.js" as Tools
 
+// TODO: добавить поддержку отрицательных чисел
+
 function execute()
 {
     console.time("execute");
@@ -29,7 +31,12 @@ function prepareView()
         Tools.deleteChildren(basedNumber1);
         Tools.deleteChildren(basedNumber2);
         Tools.deleteChildren(basedResult);
-        //grid_addition_substract.visible = (action.currentIndex < 2); // сложение, вычитание
+
+
+        row_add_substract.visible = (action.currentIndex <= 2);
+        if(action.currentIndex <= 1) {
+            operation_sign.text = (action.currentIndex === 0 ? '+' : '-');
+        }
     }
 }
 
@@ -86,6 +93,10 @@ function makeOperation()
     if(action.currentIndex === 0) {
         addition(a, b, primaryBase, secondaryBase);
     }
+    // вычитание
+    else if(action.currentIndex === 1) {
+        substraction(a, b, primaryBase, secondaryBase);
+    }
 }
 
 // Сложение
@@ -116,6 +127,7 @@ function addition(an, bn, base1, base2)
         }
     }
 
+    // вывод ответа
     var resultInBase1 = objectToFloat(result, base1);
     var text =
             Strings.printf("{0}<sub>{1}</sub> + {2}<sub>{3}</sub> = {4}<sub>{5}</sub>",
@@ -136,7 +148,8 @@ function addition(an, bn, base1, base2)
     }
     label_short_decision.text = text;
 
-    if(State !== 'student') {
+    // вывод решения
+    if(State.mode !== 'student') {
         var component = Qt.createComponent("qrc:/components/textcomponent.qml");
         var object;
         var hasDot = false, dotNow = false;
@@ -160,6 +173,114 @@ function addition(an, bn, base1, base2)
             object.text = Tools.isDefined(result[i]) ? Tools.getBasedNumber(result[i], 36) : (i < result.min ? '0' : '');
          }
     }
+}
+
+// Вычитание
+function substraction(adata, bdata, base1, base2)
+{
+    var a, b;
+    var an = Tools.cloneObject(adata);
+    var bn = Tools.cloneObject(bdata);
+    var min = Math.min(an.min, bn.min);
+    var max = Math.max(an.max, bn.max);
+    var result = {
+        min: min,
+        max: max
+    };
+
+    // TODO: вычитание из меньшего большего
+    if(b > a) {
+
+    }
+
+    for(var i = min; i <= max; i++) {
+        a = Tools.getNumber(an[i]);
+        b = Tools.getNumber(bn[i]);
+
+        // если текущий разряд меньше
+        if(a < b) {
+            for(var j = i + 1; j <= max; j++) {
+                if(Tools.getNumber(an[j]) !== 0) {
+                    an[j]--;
+                    a += base1; /// !!!
+                    if(a >= base1)
+                    for(var k = j - 1; k > i; k--) {
+                        an[k] = (base1 - 1); /// !!!
+                    }
+                    break;
+                }
+            }
+        }
+
+        if(!Tools.isDefined(result[i])) result[i] = 0;
+        result[i] += Tools.basedSub(a, b, base1);
+    }
+
+    // удаление незначащих нулей
+    for(var i = max; i >= min && max >= 0; i--) {
+        if(Tools.getNumber(result[i]) === 0) {
+            result.max--;
+            continue;
+        }
+        break;
+    }
+
+    // вывод ответа
+    var resultInBase1 = objectToFloat(result, base1);
+    var text =
+            Strings.printf("{0}<sub>{1}</sub> - {2}<sub>{3}</sub> = {4}<sub>{5}</sub>",
+                           num1.text, num1_base.value,
+                           num2.text, num2_base.value,
+                           resultInBase1, base1);
+
+    // если системы счисления не совпадают, вывести две
+    var resultInDec = Tools.toDecimal(resultInBase1, base1, 5);
+    if(base1 !== base2) {
+        text += " = " + Tools.fromDecimal(resultInDec, base2) +
+                "<sub>" + base2 + "</sub>";
+    }
+
+    // переводим дополнительно в десятичную
+    if(base1 !== 10 && base2 !== 10) {
+        text += " = " + resultInDec + "<sub>10</sub>";
+    }
+    label_short_decision.text = text;
+
+    // вывод решения
+    if(State.mode !== 'student') {
+        var component = Qt.createComponent("qrc:/components/textcomponent.qml");
+        var object;
+        var hasDot = false, dotNow = false;
+        min = Math.min(min, result.min);
+        max = Math.max(max, result.max);
+
+        for(var i = max; i >= min; i--) {
+            if(i === -1) {
+                component.createObject(basedNumber1).text = '.';
+                component.createObject(basedNumber2).text = '.';
+                component.createObject(basedResult).text = '.';
+            }
+
+            object = component.createObject(basedNumber1);
+            object.text = getNumberInObject(adata, i);
+
+            object = component.createObject(basedNumber2);
+            object.text = getNumberInObject(bdata, i);
+
+            object = component.createObject(basedResult);
+            object.text = getNumberInObject(result, i);
+         }
+    }
+}
+
+// Возвращает число, находящееся в рязряде
+// Если индекс больше максимального рязряда, возвращяется пустая строка
+// Если меньше, возвращяется ноль
+function getNumberInObject(obj, index)
+{
+    if(index > obj.max) return '';
+    else if(index < obj.min) return '0';
+    return Tools.getNumber(obj[index]);
 }
 
 
