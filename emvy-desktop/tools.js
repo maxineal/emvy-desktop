@@ -1,4 +1,5 @@
 
+// Проверяет, определена ли переменная
 function isDefined(obj)
 {
     if(typeof obj === "object" && obj === null) return false;
@@ -6,16 +7,23 @@ function isDefined(obj)
     return false;
 }
 
+// Переводит строку в число
 function getNumber(n, base)
 {
-    if(!isDefined(n)) n = 0;
-    return parseInt(n, isDefined(base) ? base : 36);
+    if(!isDefined(n)) return 0;
+    if(!isNaN(n)) return n;
+    var a = parseInt(n, isDefined(base) ? base : 36);
+    return a;
 }
+
 
 function getBasedNumber(n, base)
 {
-    return n.toString(base);
+    var a = parseInt(n).toString(isDefined(base) ? base : 36);
+    if(a == "NaN") return 0;
+    return a;
 }
+
 
 function toDecimal(n, base, accuracy)
 {
@@ -52,10 +60,15 @@ function fromDecimal(n, base, accuracy)
     var intPart = (~~n);
     var destBaseResult = "";
     var basedNumber = "";
-    while(intPart > 0) {
-        basedNumber = Tools.getBasedNumber(intPart % base, base);
-        destBaseResult += basedNumber;
-        intPart = ~~(intPart / base);
+    if(intPart == 0) {
+        destBaseResult = "0";
+    }
+    else {
+        while(intPart > 0) {
+            basedNumber = Tools.getBasedNumber(intPart % base, base);
+            destBaseResult += basedNumber;
+            intPart = ~~(intPart / base);
+        }
     }
 
     // переворачиваем число
@@ -74,9 +87,10 @@ function fromDecimal(n, base, accuracy)
             fraction = fraction - partedFraction;
         }
     }
-    while(destBaseResult.substr(destBaseResult.length - 1, 1) === '0') {
+    /*
+    while(destBaseResult.length > 1 && destBaseResult.substr(destBaseResult.length - 1, 1) === '0') {
         destBaseResult = destBaseResult.substr(0, destBaseResult.length - 1);
-    }
+    }*/
     return destBaseResult;
 }
 
@@ -115,10 +129,15 @@ function isNumber(n, base, options)
     return true;
 }
 
+// Удаляет дочерние элементы в контейнере
 function deleteChildren(obj)
 {
-    for(var i = 0; i < obj.children.length; i++) {
-        obj.children[i].destroy();
+    var object;
+    for(var i = 0; i < arguments.length; i++) {
+        object = arguments[i];
+        for(var j = 0; j < object.children.length; j++) {
+            object.children[j].destroy();
+        }
     }
 }
 
@@ -126,23 +145,127 @@ function deleteChildren(obj)
 function cloneObject(obj)
 {
     if(obj === null || typeof obj !== 'object') return obj;
-    var copy = {};
+    var copy = obj.constructor();
     for (var attr in obj) {
         if(obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
     }
     return copy;
 }
 
-
+// Сложение a, b в системе счисления base
 function basedAdd(a, b, base)
 {
-    console.log(123);
+    var ab = toDecimal(a, base);
+    var bb = toDecimal(b, base);
+    var res = fromDecimal(ab + bb, base);
+    return parseInt(res);
 }
 
+// Вычитание b из a, в системе счисления base
 function basedSub(a, b, base)
 {
     var ab = toDecimal(a, base);
     var bb = toDecimal(b, base);
-    return fromDecimal(toDecimal(a, base) - toDecimal(b, base), base);
+    return parseInt(fromDecimal(ab - bb, base));
+}
+
+// Создает число, разбитое на разряды
+function initSplitNumber(n, base)
+{
+    var object = {
+        min: 0, // минимальный разряд
+        max: 0, // максимальный разряд
+        digits: {
+            0: 0
+        },
+
+        // Парсит число
+        parse: function(num) {
+            n = num.toString();
+            var currentDigit = 0;
+            var dot = n.toString().indexOf('.');
+            if(dot > -1) {
+                currentDigit = dot - n.length + 1;
+            }
+            this.min = currentDigit;
+            for(var i = n.length - 1; i >= 0; i--) {
+                if(i === dot) continue;
+                this.digits[currentDigit] = getNumber(n.substr(i, 1), 36);
+                currentDigit++;
+            }
+            this.max = currentDigit != 0 ? currentDigit - 1 : 0;
+        },
+
+        // Получает число из разряда
+        get: function(index) {
+            return isDefined(this.digits[index]) ? parseInt(this.digits[index]) : 0;
+        },
+
+        // Устанавливает цифру в разряд
+        set: function(index, value) {
+            if(index < this.min) this.min = index;
+            if(index > this.max) this.max = index;
+            this.digits[index] = value;
+        },
+
+        // Получает число для отображения
+        // Если число есть в разряде, то вернется это число
+        // Если индекс меньше минимального разряда, вернется 0
+        // Если больше, то вернется пустая строка
+        getView: function(index) {
+            if(index > this.max) return '';
+            return getBasedNumber(this.get(index)).toString().toUpperCase();
+        },
+
+        // Прибавляет к цифре в разряд
+        add: function(index, value) {
+            this.set(index, this.get(index) + value);
+        },
+
+        sub: function(index, value) {
+            this.add(index, -value);
+        },
+
+        normalize: function() {
+            for(var i = this.max; i >= this.min; i--) {
+                if(this.get(i) !== 0 || i === 0) {
+                    this.max = i;
+                    break;
+                } else {
+                    if(isDefined(this.digits[i])) {
+                        delete this.digits[i];
+                    }
+                }
+            }
+        },
+
+        // Определяет, является ли цифра значимой
+        isSignificant: function(index) {
+            return (index <= this.max && index >= this.min);
+        },
+
+        toString: function() {
+            var a = '';
+            for(var i = this.max; i >= this.min; i--) {
+                if(i === -1) a += '.';
+                a += getBasedNumber(this.get(i), 36);
+            }
+            return a;
+        },
+    };
+    object.parse(n);
+    return object;
+}
+
+// Копирует число в новый объект
+function copySplitNumber(object)
+{
+    var newObject = initSplitNumber(0);
+    newObject.min = object.min;
+    newObject.max = object.max;
+    for(var i = object.min; i <= object.max; i++) {
+        newObject.digits[i] = object.digits[i];
+    }
+    return newObject;
 }
 

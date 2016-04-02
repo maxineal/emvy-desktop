@@ -35,7 +35,7 @@ Item {
                 placeholderText: qsTr("Число 1")
                 anchors.left: parent.left
                 anchors.right: parent.right
-                text: "77.1221"
+                text: "123.332"
             }
 
             Label {
@@ -52,7 +52,7 @@ Item {
                 minimumValue: 2
                 maximumValue: 36
                 stepSize: 1
-                value: 8
+                value: 10
             }
         }
 
@@ -113,7 +113,7 @@ Item {
                 placeholderText: qsTr("Число 2")
                 anchors.left: parent.left
                 anchors.right: parent.right
-                text: "3a.23"
+                text: "50f.f4f"
             }
 
             Label {
@@ -164,7 +164,7 @@ Item {
             height: children.height + 20;
 
             Text {
-                id: label_answer_text
+                id: label_text_answer
                 text: qsTr("Ответ:")
                 font.bold: false
                 visible: false
@@ -172,7 +172,7 @@ Item {
             }
 
             Text {
-                id: label_short_decision
+                id: label_answer
                 text: ""
                 wrapMode: Text.Wrap
                 visible: false
@@ -180,7 +180,7 @@ Item {
             }
 
             Text {
-                id: label_decision_text
+                id: label_text_decision
                 text: qsTr("<b>Решение:</b>")
                 visible: false
                 anchors.topMargin: 20
@@ -188,7 +188,13 @@ Item {
             }
 
             Text {
-                id: label_showAs_text
+                id: label_text_showAs
+                visible: false
+                textFormat: Text.RichText
+            }
+
+            Text {
+                id: label_num1_more_num2
                 visible: false
                 textFormat: Text.RichText
             }
@@ -196,6 +202,7 @@ Item {
             Row {
                 id: row_add_substract
                 visible: false
+                width: children.width
 
                 ColumnLayout {
                     anchors {
@@ -244,6 +251,13 @@ Item {
                         }
                     }
                 }
+            }
+
+            Text {
+                id: label_final_answer
+                visible: false
+                anchors.bottomMargin: 20
+                textFormat: Text.RichText
             }
         }
     }

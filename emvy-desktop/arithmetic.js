@@ -8,8 +8,8 @@
 
 function execute()
 {
-    console.time("execute");
     prepareView();
+    console.time("execute");
     if(validate()) {
         makeOperation();
     }
@@ -20,24 +20,23 @@ function execute()
 // Подготовка вида
 function prepareView()
 {
-    label_answer_text.visible = true;
-    label_short_decision.visible = true;
+    var $teacher = State.mode !== 'student';
 
-    if(State.mode !== 'student') {
-        label_decision_text.visible = true;
+    label_text_answer.visible =
+            label_answer.visible = true;
 
-        label_showAs_text.visible = (num1_base.value !== num2_base.value);
+    label_text_decision.visible =
+            label_final_answer.visible = $teacher;
+    label_num1_more_num2.visible =
+            $teacher &&
+            (parseFloat(Tools.toDecimal(num1.text, num1_base.value)) <
+             parseFloat(Tools.toDecimal(num2.text, num2_base.value)));
 
-        Tools.deleteChildren(basedNumber1);
-        Tools.deleteChildren(basedNumber2);
-        Tools.deleteChildren(basedResult);
+    label_text_showAs.visible =
+            $teacher && (num1_base.value !== num2_base.value);
 
-
-        row_add_substract.visible = (action.currentIndex <= 2);
-        if(action.currentIndex <= 1) {
-            operation_sign.text = (action.currentIndex === 0 ? '+' : '-');
-        }
-    }
+    Tools.deleteChildren(basedNumber1, basedNumber2, basedResult);
+    row_add_substract.visible = $teacher && (action.currentIndex <= 2);
 }
 
 // Валидация
@@ -73,21 +72,21 @@ function makeOperation()
     if(num1_base.value !== num2_base.value) {
         if(mainbase.currentIndex === 0) {
             n2 = Tools.fromDecimal(Tools.toDecimal(n2, num2_base.value), num1_base.value, 5);
-            label_showAs_text.text =
+            label_text_showAs.text =
                     Strings.printf("Число {0}<sub>{1}</sub> в {2}-ричной системе счисления: {3}<sub>{2}</sub>.",
                                    num2.text, secondaryBase, primaryBase, n2);
         } else {
             n1 = Tools.fromDecimal(Tools.toDecimal(n1, num1_base.value), num2_base.value, 5);
             primaryBase = num2_base.value;
             secondaryBase = num1_base.value;
-            label_showAs_text.text =
+            label_text_showAs.text =
                     Strings.printf("Число {0}<sub>{1}</sub> в {2}-ричной системе счисления: {3}<sub>{2}</sub>.",
                                    num1.text, secondaryBase, primaryBase, n1);
         }
     }
 
-    var a = floatToObject(n1, primaryBase);
-    var b = floatToObject(n2, primaryBase);
+    var a = Tools.initSplitNumber(n1);
+    var b = Tools.initSplitNumber(n2);
 
     // сложение
     if(action.currentIndex === 0) {
@@ -102,226 +101,126 @@ function makeOperation()
 // Сложение
 function addition(an, bn, base1, base2)
 {
+    operation_sign.text = '+';
+
+    var $teacher = State.mode !== 'student';
     var a, b;
     var min = Math.min(an.min, bn.min);
     var max = Math.max(an.max, bn.max);
-    var result = {
-        min: min,
-        max: max
-    };
+    var result = Tools.initSplitNumber(0);
 
     for(var i = min; i <= max; i++) {
-        a = Tools.isDefined(an[i]) ? an[i] : 0;
-        b = Tools.isDefined(bn[i]) ? bn[i] : 0;
-        if(!Tools.isDefined(result[i])) result[i] = 0;
-        result[i] += (a + b);
-        if(result[i] >= base1) {
-            if(!Tools.isDefined()) {
-                result[i + 1] = 0;
-            }
-            result[i + 1] += 1;
-            result[i] -= base1;
-            if(i + 1 > result.max) {
-                result.max = i + 1;
-            }
+        a = an.get(i);
+        b = bn.get(i);
+        result.add(i, a + b);
+
+        if(result.get(i) >= base1) {
+            result.set(i + 1, 1);
+            result.sub(i, base1);
         }
     }
 
-    // вывод ответа
-    var resultInBase1 = objectToFloat(result, base1);
-    var text =
-            Strings.printf("{0}<sub>{1}</sub> + {2}<sub>{3}</sub> = {4}<sub>{5}</sub>",
+    // ответ
+    label_answer.text =
+            Strings.printf("{0}<sub>{1}</sub> + {2}<sub>{3}</sub> = {4}<sub>{1}</sub>",
                            num1.text, num1_base.value,
                            num2.text, num2_base.value,
-                           resultInBase1, base1);
+                           result.toString());
 
-    // если системы счисления не совпадают, вывести две
-    var resultInDec = Tools.toDecimal(resultInBase1, base1, 5);
-    if(base1 !== base2) {
-        text += " = " + Tools.fromDecimal(resultInDec, base2) +
-                "<sub>" + base2 + "</sub>";
+    if(base1 !== 10) {
+        var resultInDecimalBase = Tools.toDecimal(result.toString(), base1, 5);
+        label_answer.text +=
+                Strings.printf(" = {0}<sub>10</sub>", resultInDecimalBase);
     }
-
-    // переводим дополнительно в десятичную
-    if(base1 !== 10 && base2 !== 10) {
-        text += " = " + resultInDec + "<sub>10</sub>";
-    }
-    label_short_decision.text = text;
 
     // вывод решения
-    if(State.mode !== 'student') {
+    if($teacher) {
         var component = Qt.createComponent("qrc:/components/textcomponent.qml");
-        var object;
-        var hasDot = false, dotNow = false;
-        min = Math.min(min, result.min);
-        max = Math.max(max, result.max);
+        for(var i = result.max; i >= result.min; i--) {
+            component.createObject(basedNumber1).text = (i === -1 ? '.' : '') + an.getView(i);
+            component.createObject(basedNumber2).text = (i === -1 ? '.' : '') + bn.getView(i);
+            component.createObject(basedResult).text = (i === -1 ? '.' : '') + result.getView(i);
+        }
 
-        for(var i = max; i >= min; i--) {
-            if(i === -1) {
-                component.createObject(basedNumber1).text = '.';
-                component.createObject(basedNumber2).text = '.';
-                component.createObject(basedResult).text = '.';
-            }
-
-            object = component.createObject(basedNumber1);
-            object.text = Tools.isDefined(an[i]) ? Tools.getBasedNumber(an[i], 36) : (i < an.min ? '0' : '');
-
-            object = component.createObject(basedNumber2);
-            object.text = Tools.isDefined(bn[i]) ? Tools.getBasedNumber(bn[i], 36) : (i < bn.min ? '0' : '');
-
-            object = component.createObject(basedResult);
-            object.text = Tools.isDefined(result[i]) ? Tools.getBasedNumber(result[i], 36) : (i < result.min ? '0' : '');
-         }
+        label_final_answer.text =
+                Strings.printf("Ответ: {0}<sub>{1}</sub>.", result, base1);
     }
+
+    //console.log(result.toString());
 }
 
 // Вычитание
-function substraction(adata, bdata, base1, base2)
+function substraction(an, bn, base1, base2)
 {
-    var a, b;
-    var an = Tools.cloneObject(adata);
-    var bn = Tools.cloneObject(bdata);
-    var min = Math.min(an.min, bn.min);
-    var max = Math.max(an.max, bn.max);
-    var result = {
-        min: min,
-        max: max
-    };
+    operation_sign.text = '-';
 
-    // TODO: вычитание из меньшего большего
-    if(b > a) {
+    // ЕСЛИ an МЕНЬШЕ bn
+    var inverseSign = false;
+    if(parseFloat(Tools.toDecimal(an.toString(), base1)) <
+            parseFloat(Tools.toDecimal(bn.toString(), base1))) {
+        label_num1_more_num2.text =
+                Strings.printf("{0}<sub>{1}</sub> меньше, чем {2}<sub>{1}</sub>.<br>" +
+                               "Переставим их местами и добавим к ответу минус.",
+                               an.toString(), base1, bn.toString());
+        inverseSign = true;
 
+        var tmp = bn;
+        bn = an;
+        an = tmp;
     }
 
-    for(var i = min; i <= max; i++) {
-        a = Tools.getNumber(an[i]);
-        b = Tools.getNumber(bn[i]);
+    var $teacher = State.mode !== 'student';
+    var a, b;
+    var acopy = Tools.copySplitNumber(an);
+    var bcopy = Tools.copySplitNumber(bn);
+    var min = Math.min(an.min, bn.min);
+    var max = Math.max(an.max, bn.max);
+    var result = Tools.initSplitNumber(0);
 
-        // если текущий разряд меньше
+    for(var i = min; i <= max; i++) {
+        a = an.get(i);
+        b = bn.get(i);
         if(a < b) {
             for(var j = i + 1; j <= max; j++) {
-                if(Tools.getNumber(an[j]) !== 0) {
-                    an[j]--;
-                    a += base1; /// !!!
-                    if(a >= base1)
+                if(an.get(j) !== 0)
+                {
+                    an.sub(j, 1);
+                    a += base1;
+                    //a = Tools.basedAdd(a, 10, base1);
                     for(var k = j - 1; k > i; k--) {
-                        an[k] = (base1 - 1); /// !!!
+                        an.set(k, base1 - 1);
                     }
                     break;
                 }
             }
         }
-
-        if(!Tools.isDefined(result[i])) result[i] = 0;
-        result[i] += Tools.basedSub(a, b, base1);
+        //result.set(i, Tools.basedSub(a, b, base1));
+        result.set(i, a - b);
     }
+    result.normalize();
 
-    // удаление незначащих нулей
-    for(var i = max; i >= min && max >= 0; i--) {
-        if(Tools.getNumber(result[i]) === 0) {
-            result.max--;
-            continue;
-        }
-        break;
-    }
-
-    // вывод ответа
-    var resultInBase1 = objectToFloat(result, base1);
-    var text =
-            Strings.printf("{0}<sub>{1}</sub> - {2}<sub>{3}</sub> = {4}<sub>{5}</sub>",
+    // ответ
+    label_answer.text =
+            Strings.printf("{0}<sub>{1}</sub> - {2}<sub>{3}</sub> = {4}{5}<sub>{1}</sub>",
                            num1.text, num1_base.value,
                            num2.text, num2_base.value,
-                           resultInBase1, base1);
-
-    // если системы счисления не совпадают, вывести две
-    var resultInDec = Tools.toDecimal(resultInBase1, base1, 5);
-    if(base1 !== base2) {
-        text += " = " + Tools.fromDecimal(resultInDec, base2) +
-                "<sub>" + base2 + "</sub>";
+                           inverseSign ? '-' : '', result.toString());
+    if(base1 !== 10) {
+        var resultInDecimalBase = Tools.toDecimal(result.toString(), base1, 5);
+        label_answer.text +=
+                Strings.printf(" = {0}<sub>10</sub>", resultInDecimalBase);
     }
-
-    // переводим дополнительно в десятичную
-    if(base1 !== 10 && base2 !== 10) {
-        text += " = " + resultInDec + "<sub>10</sub>";
-    }
-    label_short_decision.text = text;
 
     // вывод решения
-    if(State.mode !== 'student') {
+    if($teacher) {
         var component = Qt.createComponent("qrc:/components/textcomponent.qml");
-        var object;
-        var hasDot = false, dotNow = false;
-        min = Math.min(min, result.min);
-        max = Math.max(max, result.max);
-
         for(var i = max; i >= min; i--) {
-            if(i === -1) {
-                component.createObject(basedNumber1).text = '.';
-                component.createObject(basedNumber2).text = '.';
-                component.createObject(basedResult).text = '.';
-            }
-
-            object = component.createObject(basedNumber1);
-            object.text = getNumberInObject(adata, i);
-
-            object = component.createObject(basedNumber2);
-            object.text = getNumberInObject(bdata, i);
-
-            object = component.createObject(basedResult);
-            object.text = getNumberInObject(result, i);
-         }
-    }
-}
-
-// Возвращает число, находящееся в рязряде
-// Если индекс больше максимального рязряда, возвращяется пустая строка
-// Если меньше, возвращяется ноль
-function getNumberInObject(obj, index)
-{
-    if(index > obj.max) return '';
-    else if(index < obj.min) return '0';
-    return Tools.getNumber(obj[index]);
-}
-
-
-// Преобразует число в объект
-// Где каждому числовому полю соответствует разряд
-function floatToObject(n, base)
-{
-    var s = n.toString();
-    var maxN = s.length - 1;
-    if(s.indexOf('.') > -1) {
-        maxN = s.indexOf('.') - 1;
-    }
-    var obj = {max: maxN};
-    var sym = '';
-    for(var i = 0; i < s.length; i++) {
-        sym = s.substr(i, 1);
-        if(sym === '.') continue;
-        obj[maxN] = Tools.getNumber(sym, base);
-        maxN--;
-    }
-    obj.min = maxN + 1;
-    return obj;
-}
-
-// Преобразует объект в число
-function objectToFloat(obj, base)
-{
-    var n = '';
-    var dot = false;
-    for(var i = obj.max; i >= obj.min; i--) {
-        if(i < 0 && !dot) {
-            n += '.';
-            dot = true;
+            component.createObject(basedNumber1).text = (i === -1 ? '.' : '') + acopy.getView(i);
+            component.createObject(basedNumber2).text = (i === -1 ? '.' : '') + bcopy.getView(i);
+            component.createObject(basedResult).text = (i === -1 ? '.' : '') + result.getView(i);
         }
-        n += Tools.getBasedNumber(obj[i], base);
+
+        label_final_answer.text =
+                Strings.printf("Ответ: {0}{1}<sub>{2}</sub>.", inverseSign ? '-' : '',result, base1);
     }
-    var dotPos = n.indexOf('.');
-    if(dotPos > -1) {
-        while(n.substr(n.length - 1, 1) === '0' || n.substr(n.length - 1, 1) === '.') {
-            n = n.substr(0, n.length - 1);
-        }
-    }
-    return n;
 }

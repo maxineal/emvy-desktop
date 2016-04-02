@@ -139,7 +139,7 @@ Item {
             height: children.height + 20;
 
             Text {
-                id: label_answer_text
+                id: label_text_answer
                 text: qsTr("Ответ:")
                 font.bold: false
                 visible: false
@@ -147,7 +147,7 @@ Item {
             }
 
             Text {
-                id: label_short_decision
+                id: label_answer
                 text: ""
                 wrapMode: Text.Wrap
                 visible: false
@@ -155,7 +155,7 @@ Item {
             }
 
             Text {
-                id: label_decision_text
+                id: label_text_decision
                 text: qsTr("<b>Решение:</b>")
                 visible: false
                 //anchors.top: label_short_decision.bottom
@@ -164,7 +164,7 @@ Item {
             }
 
             Text {
-                id: label_translateTo10_text
+                id: label_text_translateTo10
                 visible: false
             }
 
@@ -175,14 +175,14 @@ Item {
             }
 
             Text {
-                id: label_translateFrom10_text
+                id: label_text_translateFrom10
                 //anchors.top: label_translateTo10.bottom
                 anchors.topMargin: 10
                 visible: false
             }
 
             Text {
-                id: label_translateFrom10_divide_int_text
+                id: label_text_translateFrom10_divide_int
                 visible: false
             }
 
@@ -200,7 +200,7 @@ Item {
             }
 
             Text {
-                id: label_translateFrom10_decimal_text
+                id: label_text_translateFrom10_decimal
                 visible: false
             }
 
@@ -211,7 +211,7 @@ Item {
             }
 
             Text {
-                id: label_answer
+                id: label_final_answer
                 visible: false
                 anchors.bottomMargin: 20
                 textFormat: Text.RichText

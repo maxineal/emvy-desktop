@@ -1,28 +1,4 @@
 
-function get(scope, id)
-{
-    var str = "";
-    if(scope === "translate") {
-        switch(id) {
-            case "translate_to10":
-                str = "Переводим число {0} в десятичную систему счисления:";
-
-        }
-    }
-    if(str.length > 0) {
-        if(arguments.length > 2) {
-            for(var i = 0; i < arguments.length - 2; i++) {
-                try {
-                    str = str.split('{' + i + '}').join(arguments[i + 2]);
-                } catch(e) {
-                    console.log("Exception in get. Message: " + e.message);
-                }
-            }
-        }
-    }
-    return str;
-}
-
 function printf(str)
 {
     if(arguments.length > 1) {

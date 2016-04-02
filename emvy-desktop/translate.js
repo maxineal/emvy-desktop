@@ -38,66 +38,63 @@ function makeTranslate()
     var $toBase = toBase.value;
     var $accuracy = accuracy.value;
     var $result = 0
-
     var $teacher = State.mode !== 'student';
 
     // перевод в десятичную СС
     if($fromBase !== 10) {
         if($teacher) {
-            label_translateTo10_text.text = Strings.get("translate", "translate_to10", $n);
-            label_translateTo10.text = $n + "<sub>" + $fromBase + "</sub>&nbsp;=&nbsp;";
+            label_text_translateTo10.text =
+                    Strings.printf("Переводим число {0} в десятичную систему счисления:", $n);
+            label_translateTo10.text = Strings.printf("{0}<sub>{1}</sub> = ", $n, $fromBase);
         }
 
-        var currentN = 0;
-        var dotPos = $n.indexOf('.');
-        if(dotPos > -1) currentN = dotPos - $n.length + 1;
-        for(var i = $n.length - 1; i >=0; i--) {
-            if(i === dotPos) continue;
-            var currentNumber = Tools.getNumber($n.substr(i, 1));
+        var $sn = Tools.initSplitNumber($n, $fromBase);
+        for(var i = $sn.min; i <= $sn.max; i++) {
             if($teacher) {
-                label_translateTo10.text += currentNumber + ' * ' + $fromBase + "<sup>" + currentN + "</sup>";
-                if(i !== 0) label_translateTo10.text += "&nbsp;+&nbsp;";
+                label_translateTo10.text +=
+                        Strings.printf("{0} * {1}<sup>{2}</sup>", $sn.get(i), $fromBase, i);
+                if(i !== $sn.max) label_translateTo10.text += ' + ';
             }
-            $result += currentNumber * Math.pow($fromBase, currentN);
-            currentN++;
+
+            $result += $sn.get(i) * Math.pow($fromBase, i);
         }
-        $result = parseFloat($result);
+
         if($teacher) {
-            label_translateTo10.text += "&nbsp;=&nbsp;" + $result + "<sub>10</sub>";
+            label_translateTo10.text += Strings.printf(" = {0}<sub>10</sub>.", $result);
         }
-    } else {
+    }
+    else {
         $result = parseFloat($n);
     }
 
-    // перевод в нужную СС
+    // перевод из десятичной СС
     if($toBase !== 10) {
-        if($teacher) {
-            label_translateFrom10_text.text = Strings.printf(qsTr("Переводим число из десятичной в {0} систему счисления."), $toBase);
-            label_translateFrom10_divide_int_text.text = Strings.printf(qsTr("Делим целую часть числа на {0}, сохраняя остатки:"), $toBase);
-        }
-
-
-        var component = null, object = null;
+        var component;
         if($teacher) {
             component = Qt.createComponent("qrc:/components/textcomponent.qml");
+            label_text_translateFrom10.text =
+                    Strings.printf("Переводим число из десятичной в {0}-ричную систему счисления.", $toBase);
+            label_text_translateFrom10_divide_int.text =
+                    Strings.printf("Делим целую часть числа на {0}, сохраняя остатки:", $toBase);
         }
 
-        var intPart = (~~$result);
-        var destBaseResult = "";
-        var basedNumber = "";
-        while(intPart > 0) {
-            basedNumber = Tools.getBasedNumber(intPart % $toBase, $toBase);
+
+        var digitPart = ~~($result);
+        var destBaseResult = '', basedNumber = '';
+        while(digitPart > 0) {
+            basedNumber = Tools.getBasedNumber(digitPart % $toBase, $toBase);
+            destBaseResult += basedNumber;
+
             if($teacher) {
-                object = component.createObject(grid_translateFrom10_divide_int);
-                object.text = intPart;
-                if(intPart >= $toBase) {
+                var object = component.createObject(grid_translateFrom10_divide_int);
+                object.text = digitPart;
+                if(digitPart >= $toBase) {
                     object = component.createObject(grid_translateFrom10_divide_int);
                     object.text = basedNumber;
                 }
                 object.font.bold = true;
             }
-            destBaseResult += basedNumber;
-            intPart = ~~(intPart / $toBase);
+            digitPart = ~~(digitPart / $toBase);
         }
 
         // переворачиваем число
@@ -109,56 +106,45 @@ function makeTranslate()
         }
 
         // дробная часть
-        if($result.toString().indexOf('.') > -1) {
+        if($n.toString().indexOf('.') > -1) {
             if($teacher) {
-                label_translateFrom10_decimal_text.text = Strings.printf("Переводим дробную часть, умножая ее на {0} и сохраняя целые:", $toBase);
+                label_text_translateFrom10_decimal.text =
+                        Strings.printf("Переводим дробную часть, умножая ее на {0} и сохраняя целые:",
+                                       $toBase);
             }
 
-            destBaseResult += ".";
+            destBaseResult += '.';
             var fraction = $result - (~~$result);
             var partedFraction = 0;
             for(var i = 0; i < $accuracy; i++)
             {
                 if($teacher) {
-                    object = component.createObject(list_translateFrom10_decimal);
-                    object.text = fraction;
-                    object = component.createObject(list_translateFrom10_decimal);
-                    object.text = " * " + $toBase + " ";
+                    component.createObject(list_translateFrom10_decimal).text = fraction;
+                    component.createObject(list_translateFrom10_decimal).text = " * " + $toBase + " ";
                 }
 
-                fraction *= $toBase;
-                partedFraction = ~~fraction;
+                fraction *= $toBase; partedFraction = ~~fraction;
                 destBaseResult += Tools.getBasedNumber(partedFraction, $toBase);
                 fraction = fraction - partedFraction;
+
                 if($teacher) {
-                    object = component.createObject(list_translateFrom10_decimal);
-                    object.text = "= <b>" + partedFraction + "</b>" + fraction.toString().substr(1);
+                    component.createObject(list_translateFrom10_decimal).text =
+                            "= <b>" + partedFraction + "</b>" + fraction.toString().substr(1);
                 }
             }
         }
         $result = destBaseResult;
-
-        if(component !== null) {
-            component.destroy();
-            component = null;
-        }
-    } else {
-        if($result.toString().indexOf('.') > -1) {
-            $result = $result.toFixed($accuracy);
-        }
+    }
+    else {
+        $result = $result.toFixed($accuracy);
     }
 
-    label_short_decision.text = Strings.printf("{0}<sub>{1}</sub>&nbsp;=&nbsp;{2}<sub>{3}</sub>", $n, $fromBase, $result, $toBase);
+    label_answer.text =
+            Strings.printf("{0}<sub>{1}</sub> = {2}<sub>{3}</sub>.",
+                           $n, $fromBase, $result, $toBase);
     if($teacher) {
-        label_answer.text = Strings.printf("Ответ: {0}<sub>{1}</sub>.", $result, $toBase);
+        label_final_answer.text = Strings.printf("Ответ: {0}<sub>{1}</sub>.", $result, $toBase);
     }
-}
-
-// Очищает поле
-function clearField()
-{
-    Tools.deleteChildren(grid_translateFrom10_divide_int);
-    Tools.deleteChildren(list_translateFrom10_decimal);
 }
 
 // Обработка вида
@@ -166,22 +152,32 @@ function prepareView()
 {
     var $teacher = State.mode !== 'student';
 
-    label_answer_text.visible = label_short_decision.visible = true;
+    label_text_answer.visible =
+            label_answer.visible = true;
 
     // решение
-    label_decision_text.visible = label_answer.visible = $teacher;
+    label_text_decision.visible =
+            label_final_answer.visible = true;
 
     // перевод в десятичную СС
-    label_translateTo10_text.visible = label_translateTo10.visible = ((fromBase.value !== 10) && $teacher);
+    label_text_translateTo10.visible =
+            label_translateTo10.visible = ($teacher && (fromBase.value !== 10));
 
     // перевод из десятичной СС
-    label_translateFrom10_text.visible =
-            label_translateFrom10_divide_int_text.visible =
+    label_text_translateFrom10.visible =
+            label_text_translateFrom10_divide_int.visible =
             grid_translateFrom10_divide_int.visible =
-            label_translateFrom10_divide_int_result.visible = ((toBase.value !== 10) && $teacher);
+            label_translateFrom10_divide_int_result.visible = ($teacher && (toBase.value) !== 10);
 
     // перевод из десятичной СС дробной части
-    label_translateFrom10_decimal_text.visible =
+    label_text_translateFrom10_decimal.visible =
             list_translateFrom10_decimal.visible =
-            ((toBase !== 10) && $teacher && number.text.indexOf('.') > -1);
+            ($teacher && (toBase.value !== 10) && number.text.indexOf('.') > -1);
+}
+
+// Очищает поле
+function clearField()
+{
+    Tools.deleteChildren(grid_translateFrom10_divide_int);
+    Tools.deleteChildren(list_translateFrom10_decimal);
 }
