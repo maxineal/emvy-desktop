@@ -224,3 +224,24 @@ function substraction(an, bn, base1, base2)
                 Strings.printf("Ответ: {0}{1}<sub>{2}</sub>.", inverseSign ? '-' : '',result, base1);
     }
 }
+
+// Умножение
+function multiply(an, bn, base1, base2)
+{
+    operation_sign.text = '*';
+
+    var $teacher = State.mode !== 'student';
+    var a, b;
+    var count = bn.max + Math.abs(bn.min) + 1;
+    var len = an. max + Math.abs(an.min) + 1;
+    var result = {};
+
+    for(var i = bn.min; i <= bn.max; i++) {
+        b = bn.get(i);
+        result[i] = Tools.initSplitNumber(0);
+        for(var j = an.min; j <= an.max; j++) {
+            a = an.get(j);
+            result[i].set((i - bn.min) + j, a * b);
+        }
+    }
+}

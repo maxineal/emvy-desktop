@@ -76,7 +76,7 @@ Item {
                     right: parent.right
                 }
                 model: ["сложить", "вычесть", "умножить", "разделить"];
-                currentIndex: 1
+                currentIndex: 2
             }
 
             Label {
@@ -224,11 +224,13 @@ Item {
                     Row {
                         id: basedNumber1
                         Layout.alignment: Qt.AlignRight
+                        spacing: 1
                     }
 
                     Row {
                         id: basedNumber2
                         Layout.alignment: Qt.AlignRight
+                        spacing: 1
                     }
 
                     Rectangle {
@@ -249,6 +251,7 @@ Item {
                             top: result_line.top
                             topMargin: 3
                         }
+                        spacing: 1
                     }
                 }
             }
