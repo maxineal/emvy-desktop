@@ -96,6 +96,9 @@ function makeOperation()
     else if(action.currentIndex === 1) {
         substraction(a, b, primaryBase, secondaryBase);
     }
+    else if(action.currentIndex === 2) {
+        multiply(a, b, primaryBase, secondaryBase);
+    }
 }
 
 // Сложение
@@ -234,14 +237,53 @@ function multiply(an, bn, base1, base2)
     var a, b;
     var count = bn.max + Math.abs(bn.min) + 1;
     var len = an. max + Math.abs(an.min) + 1;
-    var result = {};
+    var el = {};
+    var ind1, ind2;
+    var max = 0;
 
+    // поэлементное умножение
     for(var i = bn.min; i <= bn.max; i++) {
         b = bn.get(i);
-        result[i] = Tools.initSplitNumber(0);
+        ind1 = i + Math.abs(bn.min);
+        el[ind1] = Tools.initSplitNumber();
+
         for(var j = an.min; j <= an.max; j++) {
             a = an.get(j);
-            result[i].set((i - bn.min) + j, a * b);
+            ind2 = j + Math.abs(an.min);
+
+            el[ind1].add(ind1 + ind2, a * b);
+            if(el[ind1].get(ind1 + ind2) >= base1) {
+                el[ind1].set(ind1 + ind2 + 1, ~~(el[ind1].get(ind1 + ind2) / base1));
+                el[ind1].set(ind1 + ind2, el[ind1].get(ind1 + ind2) % base1);
+            }
+
+            if(el[ind1].max > max) {
+                max = el[ind1].max;
+            }
+        }
+        console.log(el[ind1].toString());
+    }
+
+    // сложение
+    var result = Tools.initSplitNumber();
+    for(var i = 0; i <= max; i++) {
+        for(var j = 0; j <= Math.abs(bn.min) + bn.max; j++) {
+            result.add(i, el[j].get(i));
+            if(result.get(i) >= base1) {
+                result.set(i, ~~(result.get(i) / base1));
+                result.set(i, result.get(i) % base1);
+            }
         }
     }
+
+    console.log(result.toString());
+
+    // тест
+    var object = Qt.createQmlObject("import QtQuick 2.0;" +
+                                    "Column { Rectangle {color: 'red'; width: 20; height: 20} }",
+                                    row_add_substract, "dynamicChild");
+    var object2 = Qt.createQmlObject("import QtQuick 2.0;" +
+                                     "Rectangle {color: 'yellow'; width: 20; height: 20}",
+                                     object, "dynamicChild2");
+
 }

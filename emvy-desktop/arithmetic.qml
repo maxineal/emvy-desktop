@@ -35,7 +35,7 @@ Item {
                 placeholderText: qsTr("Число 1")
                 anchors.left: parent.left
                 anchors.right: parent.right
-                text: "123.332"
+                text: "13.3"
             }
 
             Label {
@@ -113,7 +113,7 @@ Item {
                 placeholderText: qsTr("Число 2")
                 anchors.left: parent.left
                 anchors.right: parent.right
-                text: "50f.f4f"
+                text: "f"
             }
 
             Label {

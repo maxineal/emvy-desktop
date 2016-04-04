@@ -253,7 +253,7 @@ function initSplitNumber(n, base)
             return a;
         },
     };
-    object.parse(n);
+    if(isDefined(n)) object.parse(n);
     return object;
 }
 
