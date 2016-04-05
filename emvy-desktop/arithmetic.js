@@ -35,8 +35,9 @@ function prepareView()
     label_text_showAs.visible =
             $teacher && (num1_base.value !== num2_base.value);
 
-    Tools.deleteChildren(basedNumber1, basedNumber2, basedResult);
-    row_add_substract.visible = $teacher && (action.currentIndex <= 2);
+    Tools.deleteChildren(basedNumber1, basedNumber2, basedResult, basedDecision);
+    row_add_substract_multiply.visible = $teacher && (action.currentIndex <= 2);
+    basedDecision.visible = $teacher && (action.currentIndex === 2);
 }
 
 // Валидация
@@ -278,6 +279,41 @@ function multiply(an, bn, base1, base2)
 
     console.log(result.toString());
 
+    // вывод решения
+    if($teacher) {
+        var textComponent = Qt.createComponent("qrc:/components/textcomponent.qml");
+        var mulContainerComponent = Qt.createComponent("qrc:/components/MulContainer.qml");
+
+        // вывод первого множителя
+        for(var i = an.max; i >= an.min; i--) {
+            textComponent.createObject(basedNumber1).text = an.getView(i);
+        }
+
+        // вывод второго множителя
+        for(var i = bn.max; i >= bn.min; i--) {
+            textComponent.createObject(basedNumber2).text = bn.getView(i);
+        }
+
+        // вывод промежуточного результата
+        for(var j = 0; j <= Math.abs(bn.min) + bn.max; j++) {
+            var container = mulContainerComponent.createObject(basedDecision);
+            for(var i = max; i >= 0; i--) {
+                textComponent.createObject(container).text = el[j].getView(i);
+            }
+        }
+
+        // результирующая линия
+        Qt.createComponent("qrc:/components/ResultLine.qml").createObject(basedResult);
+
+        // вывод конечного результата
+        /*
+        for(var i = result.max; i >= result.min; i--) {
+            textComponent.createObject(basedResult).text = result.getView(i);
+        }*/
+    }
+
+
+/*
     // тест
     var object = Qt.createQmlObject("import QtQuick 2.0;" +
                                     "Column { Rectangle {color: 'red'; width: 20; height: 20} }",
@@ -285,5 +321,6 @@ function multiply(an, bn, base1, base2)
     var object2 = Qt.createQmlObject("import QtQuick 2.0;" +
                                      "Rectangle {color: 'yellow'; width: 20; height: 20}",
                                      object, "dynamicChild2");
+                                     */
 
 }

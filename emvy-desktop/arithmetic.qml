@@ -200,7 +200,7 @@ Item {
             }
 
             Row {
-                id: row_add_substract
+                id: row_add_substract_multiply
                 visible: false
                 width: children.width
 
@@ -221,6 +221,8 @@ Item {
                 }
 
                 ColumnLayout {
+                    spacing: 2
+
                     Row {
                         id: basedNumber1
                         Layout.alignment: Qt.AlignRight
@@ -244,13 +246,15 @@ Item {
                         color: "black"
                     }
 
+                    ColumnLayout {
+                        id: basedDecision
+                        visible: false
+                        spacing: 0
+                    }
+
                     Row {
                         id: basedResult
                         Layout.alignment: Qt.AlignRight
-                        anchors {
-                            top: result_line.top
-                            topMargin: 3
-                        }
                         spacing: 1
                     }
                 }

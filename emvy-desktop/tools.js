@@ -196,6 +196,11 @@ function initSplitNumber(n, base)
             this.max = currentDigit != 0 ? currentDigit - 1 : 0;
         },
 
+        // Проверяет есть ли цифра в разряде
+        exists: function(index) {
+            return isDefined(this.digits[index]);
+        },
+
         // Получает число из разряда
         get: function(index) {
             return isDefined(this.digits[index]) ? parseInt(this.digits[index]) : 0;
