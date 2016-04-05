@@ -4,5 +4,5 @@ import QtQuick.Layouts 1.0
 RowLayout {
     Layout.alignment: Qt.AlignRight
     anchors.topMargin: 0
-    spacing: 0
+    spacing: 1
 }

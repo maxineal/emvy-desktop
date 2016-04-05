@@ -199,7 +199,7 @@ Item {
                 textFormat: Text.RichText
             }
 
-            Row {
+            ColumnLayout {
                 id: row_add_substract_multiply
                 visible: false
                 width: children.width
@@ -235,27 +235,45 @@ Item {
                         spacing: 1
                     }
 
-                    Rectangle {
-                        id: result_line
-                        anchors {
-                            left: parent.left
-                            right: parent.right
-                            top: basedNumber2.bottom
-                        }
-                        height: 1
-                        color: "black"
-                    }
-
                     ColumnLayout {
-                        id: basedDecision
+                        id: basedDecisionLayout
                         visible: false
-                        spacing: 0
+
+                        Rectangle {
+                            anchors {
+                                left: parent.left
+                                right: parent.right
+                            }
+                            height: 1
+                            color: "#000000"
+                        }
+
+                        ColumnLayout {
+                            id: basedDecision
+                            visible: false
+                            spacing: 0
+                        }
                     }
 
-                    Row {
-                        id: basedResult
-                        Layout.alignment: Qt.AlignRight
-                        spacing: 1
+                    Column {
+                        id: basedResultLayout
+                        visible: true
+
+                        Rectangle {
+                            anchors {
+                                left: parent.left
+                                right: parent.right
+                            }
+                            height: 1
+                            color: "#000000"
+                        }
+
+                        Row {
+                            id: basedResult
+                            Layout.alignment: Qt.AlignRight
+                            spacing: 1
+                            visible: true
+                        }
                     }
                 }
             }

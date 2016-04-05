@@ -37,7 +37,10 @@ function prepareView()
 
     Tools.deleteChildren(basedNumber1, basedNumber2, basedResult, basedDecision);
     row_add_substract_multiply.visible = $teacher && (action.currentIndex <= 2);
-    basedDecision.visible = $teacher && (action.currentIndex === 2);
+
+    basedDecisionLayout.visible =
+            basedDecision.visible = $teacher && (action.currentIndex === 2);
+
 }
 
 // Валидация
@@ -306,10 +309,9 @@ function multiply(an, bn, base1, base2)
         Qt.createComponent("qrc:/components/ResultLine.qml").createObject(basedResult);
 
         // вывод конечного результата
-        /*
         for(var i = result.max; i >= result.min; i--) {
             textComponent.createObject(basedResult).text = result.getView(i);
-        }*/
+        }
     }
 
 
