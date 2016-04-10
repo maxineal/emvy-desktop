@@ -6,6 +6,7 @@ import QtQuick.Layouts 1.1
 import "main.js" as Main
 import "stateData.js" as State
 import "arithmetic.js" as Arithmetic
+import "tools.js" as Tools
 
 Item {
     id: main
@@ -35,7 +36,8 @@ Item {
                 placeholderText: qsTr("Число 1")
                 anchors.left: parent.left
                 anchors.right: parent.right
-                text: "13.3"
+                //text: "10448602"
+                text: "1236"
             }
 
             Label {
@@ -76,7 +78,7 @@ Item {
                     right: parent.right
                 }
                 model: ["сложить", "вычесть", "умножить", "разделить"];
-                currentIndex: 2
+                currentIndex: 3
             }
 
             Label {
@@ -91,6 +93,7 @@ Item {
                     right: parent.right
                 }
                 model: num1_base.value != num2_base.value ? [num1_base.value, num2_base.value] : [num1_base.value];
+//                currentIndex: 1
             }
         }
 
@@ -113,7 +116,8 @@ Item {
                 placeholderText: qsTr("Число 2")
                 anchors.left: parent.left
                 anchors.right: parent.right
-                text: "f"
+                //text: "da"
+                text: "4"
             }
 
             Label {
@@ -130,7 +134,7 @@ Item {
                 minimumValue: 2
                 maximumValue: 36
                 stepSize: 1
-                value: 16
+                value: 10
             }
         }
     }
@@ -327,6 +331,292 @@ Item {
                     id: mulBasedResult
                     spacing: 1
                     Layout.alignment: Qt.AlignRight
+                }
+            }
+
+            // Деление
+            ColumnLayout {
+                id: column_divide
+                visible: true
+                spacing: 1
+
+                RowLayout {
+                    ColumnLayout {
+                        // Делимое
+                        Row {
+                            id: divDevident
+                            spacing: 1
+                            Layout.alignment: Qt.AlignRight
+
+                            /*
+                            Text {
+                                text: "4"
+                                width: 10
+                                horizontalAlignment: Text.AlignHCenter
+                            }
+
+                            Text {
+                                text: "6"
+                                width: 10
+                                horizontalAlignment: Text.AlignHCenter
+                            }
+
+                            Text {
+                                text: "6"
+                                width: 10
+                                horizontalAlignment: Text.AlignHCenter
+                            }
+                            */
+                        }
+
+                        // Главный блок, промежуточные вычисления
+                        Row {
+                            id: divMainBlock
+
+                            /*
+                            Text {
+                                text: "4"
+                                width: 10
+                                horizontalAlignment: Text.AlignHCenter
+                            }
+                            */
+                        }
+                    }
+
+                    // Линия
+                    Rectangle {
+                        color: '#000000'
+                        width: 1
+                        anchors {
+                            top: parent.top
+                            bottom: parent.bottom
+                        }
+                    }
+
+                    ColumnLayout {
+                        spacing: 2
+
+                        // Делимое
+                        Text {
+                            text: ''
+                            id: divDivider
+                            Layout.alignment: Qt.AlignLeft
+                        }
+/*
+                        Row {
+                            id: divDivider
+                            spacing: 1
+                            Layout.alignment: Qt.AlignLeft
+
+                            /*
+                            Text {
+                                text: "4"
+                                width: 10
+                                horizontalAlignment: Text.AlignHCenter
+                            }
+
+                        }*/
+
+                        // Линия
+                        Rectangle {
+                            color: '#000000'
+                            height: 1
+                            anchors {
+                                left: parent.left
+                                right: parent.right
+                            }
+                        }
+
+                        // Частное
+                        Text {
+                            id: divQuotient
+                            text: ''
+
+                            /*
+                            Text {
+                                text: "1"
+                                width: 10
+                                horizontalAlignment: Text.AlignHCenter
+                            }
+
+                            Text {
+                                text: "1"
+                                width: 10
+                                horizontalAlignment: Text.AlignHCenter
+                            }
+
+                            Text {
+                                text: "6"
+                                width: 10
+                                horizontalAlignment: Text.AlignHCenter
+                            }
+
+                            Text {
+                                text: "."
+                                width: 10
+                                horizontalAlignment: Text.AlignHCenter
+                            }
+
+                            Text {
+                                text: "5"
+                                width: 10
+                                horizontalAlignment: Text.AlignHCenter
+                            }
+                            */
+                        }
+                    }
+                }
+
+                // Промежуточные вычисления
+                ColumnLayout {
+                    id: div_p
+
+                    /*
+                    ColumnLayout {
+                        Rectangle {
+                            color: '#000000'
+                            height: 1
+                            anchors {
+                                left: parent.left
+                                right: parent.right
+                            }
+                        }
+
+                        Row {
+                            Text {
+                                text: " "
+                                width: 10
+                                horizontalAlignment: Text.AlignHCenter
+                            }
+
+                            Text {
+                                text: "6"
+                                width: 10
+                                horizontalAlignment: Text.AlignHCenter
+                            }
+                        }
+
+                        Row {
+                            Layout.alignment: Qt.AlignRight
+
+                            Text {
+                                text: "4"
+                                width: 10
+                                horizontalAlignment: Text.AlignHCenter
+                            }
+                        }
+                    }
+
+                    ColumnLayout {
+                        anchors.left: div_p.children[0].right
+                        anchors.leftMargin: -10
+
+                        Rectangle {
+                            color: '#000000'
+                            height: 1
+                            anchors {
+                                left: parent.left
+                                right: parent.right
+                            }
+                        }
+
+                        Row {
+                            Text {
+                                text: "2"
+                                width: 10
+                                horizontalAlignment: Text.AlignHCenter
+                            }
+
+                            Text {
+                                text: "6"
+                                width: 10
+                                horizontalAlignment: Text.AlignHCenter
+                            }
+                        }
+
+                        Row {
+                            Layout.alignment: Qt.AlignRight
+
+                            Text {
+                                text: "2"
+                                width: 10
+                                horizontalAlignment: Text.AlignHCenter
+                            }
+
+                            Text {
+                                text: "4"
+                                width: 10
+                                horizontalAlignment: Text.AlignHCenter
+                            }
+                        }
+                    }
+
+                    ColumnLayout {
+                        anchors.left: div_p.children[1].right
+                        anchors.leftMargin: -10
+
+                        Rectangle {
+                            color: '#000000'
+                            height: 1
+                            anchors {
+                                left: parent.left
+                                right: parent.right
+                            }
+                        }
+
+                        Row {
+                            Text {
+                                text: "2"
+                                width: 10
+                                horizontalAlignment: Text.AlignHCenter
+                            }
+
+                            Text {
+                                text: "0"
+                                width: 10
+                                horizontalAlignment: Text.AlignHCenter
+                            }
+                        }
+
+                        Row {
+                            Layout.alignment: Qt.AlignRight
+
+                            Text {
+                                text: "2"
+                                width: 10
+                                horizontalAlignment: Text.AlignHCenter
+                            }
+
+                            Text {
+                                text: "0"
+                                width: 10
+                                horizontalAlignment: Text.AlignHCenter
+                            }
+                        }
+                    }
+
+                    ColumnLayout {
+                        anchors.left: div_p.children[2].right
+                        anchors.leftMargin: -10
+
+                        Rectangle {
+                            color: '#000000'
+                            height: 1
+                            anchors {
+                                left: parent.left
+                                right: parent.right
+                            }
+                        }
+
+                        Row {
+                            Text {
+                                text: "0"
+                                width: 10
+                                horizontalAlignment: Text.AlignHCenter
+                            }
+                        }
+                    }
+                    */
                 }
             }
 

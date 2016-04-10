@@ -13,6 +13,7 @@
     </qresource>
     <qresource prefix="/components">
         <file>NumberComponent.qml</file>
-        <file>MulContainer.qml</file>
+        <file>RowContainer.qml</file>
+        <file>ColumnWithLine.qml</file>
     </qresource>
 </RCC>

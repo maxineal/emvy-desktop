@@ -40,6 +40,9 @@ function prepareView()
 
     Tools.deleteChildren(mulBasedNumber1, mulBasedNumber2, mulBasedResult, mulSingleDigit);
     column_multiply.visible = $teacher && (action.currentIndex === 2);
+
+    Tools.deleteChildren(divDevident, divMainBlock, divDivider, divQuotient, div_p);
+    column_divide.visible = $teacher && (action.currentIndex === 3);
 }
 
 // Валидация
@@ -101,6 +104,9 @@ function makeOperation()
     }
     else if(action.currentIndex === 2) {
         multiply(a, b, primaryBase, secondaryBase);
+    }
+    else if(action.currentIndex === 3) {
+        divide(a, b, primaryBase, secondaryBase);
     }
 }
 
@@ -311,7 +317,7 @@ function multiply(an, bn, base1, base2)
     // вывод решения
     if($teacher) {
         var textComponent = Qt.createComponent("qrc:/components/NumberComponent.qml");
-        var mulContainerComponent = Qt.createComponent("qrc:/components/MulContainer.qml");
+        var mulContainerComponent = Qt.createComponent("qrc:/components/RowContainer.qml");
 
         // вывод первого множителя
         for(var i = an.max; i >= an.min; i--) {
@@ -339,16 +345,129 @@ function multiply(an, bn, base1, base2)
         label_final_answer.text =
                 Strings.printf("Ответ: {0}{1}<sub>{2}</sub>.", inverseSign ? '-' : '', strResult, base1);
     }
+}
+
+function divide(an, bn, base1, base2)
+{
+    var a, b;
+    var strResult = '';
+
+    var radical = 0;
+    var index = an.max - bn.length();
+    while(radical !== 0 || index >= an.min) {
+
+    }
 
 
-/*
-    // тест
-    var object = Qt.createQmlObject("import QtQuick 2.0;" +
-                                    "Column { Rectangle {color: 'red'; width: 20; height: 20} }",
-                                    row_add_substract, "dynamicChild");
-    var object2 = Qt.createQmlObject("import QtQuick 2.0;" +
-                                     "Rectangle {color: 'yellow'; width: 20; height: 20}",
-                                     object, "dynamicChild2");
-                                     */
+    /*var $teacher = State.mode !== 'student';
+    var a, b;
+    var decA, decB, decC;
+    var strResult = '';
 
+    // Получаем делитель в десятичной СС
+    b = bn.toString();
+    if(b.indexOf('.') > -1) {
+        b = b.split('.').join('');
+        while(b.substr(0, 1) === '0' && b.length > 1) {
+            b = b.substr(1);
+        }
+    }
+    decB = parseInt(b, base1);
+
+    a = an.getView(an.max);
+    decA = parseInt(a, base1);
+    var index = an.max; // текущая цифра
+    var accuracy = 0; // цифра после запятой
+    var hasDot = false;
+
+    if(an.isLess(bn)) {
+        strResult += '0.';
+        hasDot = true;
+    }
+
+    while(decA !== 0 || index > an.min) {
+        console.log('Now a = ' + a + '; decA = ' + decA);
+        var preventZero = false;
+
+        // Если текущие делимое меньше делителя
+        while(decA < decB) {
+            a += (an.getView(--index) + '');
+            decA = parseInt(a, base1);
+
+            if(index >= an.min || preventZero) strResult += '0';
+            else if(index < an.min && !preventZero) {
+                preventZero = true;
+            }
+        }
+
+        decC = ~~(decA / decB);
+        strResult += decC.toString(base1);
+        decA -= decB * decC;
+        if(decA === 0) a = '';
+        else a = decA.toString(base1);
+
+        if(index - 1 >= an.min) {
+            a += (an.getView(--index) + '');
+            decA = parseInt(a, base1);
+        }
+        else {
+            if(!hasDot) {
+                strResult += '.';
+                hasDot = true;
+            }
+        }
+    }*/
+
+    // Убираем лидирующие нули в результате
+    /*while(strResult.length > 1 && strResult.substr(0, 1) === '0') {
+        strResult = strResult.substr(1);
+    }
+    var arrayResult = strResult.split('');*/
+
+    /*
+    if($teacher) {
+        var textComponent = Qt.createComponent("qrc:/components/NumberComponent.qml");
+        var rowContainerComponent = Qt.createComponent("qrc:/components/RowContainer.qml");
+        var columnWithLine = Qt.createComponent("qrc:/components/ColumnWithLine.qml");
+
+        // делимое
+        for(var i = an.max; i >= an.min; i--) {
+            textComponent.createObject(divDevident).text = an.getView(i);
+        }
+
+        // промежуточные вычисления в главном блоке
+
+
+        // делитель
+        divDivider.text = bn.toString().split('.').join('');
+
+        // частное
+        divQuotient.text = strResult;
+    }*/
+
+    /*
+    var strResult = '';
+    a = 0;
+    for(var i = an.max; i >= an.min; i--) {
+        if(a === 0) a = an.getView(i);
+        else a += '' + an.getView(i);
+        decA = parseInt(a, base1);
+
+        while(decA < decB) {
+            i--;
+            if(i >= an.min) a += ('' + an.getView(i));
+            else a += '0';
+            decA = parseInt(a, base1);
+            if(i === an.min - 1) strResult += '.';
+            else strResult += '0';
+        }
+
+        var c = ~~(decA / decB);
+        strResult += c.toString(base1);
+
+        console.log('Divide ' + a + " / " + b + ' = ' + Tools.fromDecimal(~~(decA / decB), base1, 5));
+        a = decA - (decB * c);
+    }*/
+
+    console.log('Result: ' + strResult);
 }

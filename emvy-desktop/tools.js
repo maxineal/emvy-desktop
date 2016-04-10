@@ -157,8 +157,7 @@ function basedAdd(a, b, base)
 {
     var ab = toDecimal(a, base);
     var bb = toDecimal(b, base);
-    var res = fromDecimal(ab + bb, base);
-    return parseInt(res);
+    return fromDecimal(ab + bb, base);
 }
 
 // Вычитание b из a, в системе счисления base
@@ -166,7 +165,23 @@ function basedSub(a, b, base)
 {
     var ab = toDecimal(a, base);
     var bb = toDecimal(b, base);
-    return parseInt(fromDecimal(ab - bb, base));
+    return fromDecimal(ab - bb, base);
+}
+
+// Умножение a на b в СС base
+function basedMul(a, b, base)
+{
+    var ab = toDecimal(a, base);
+    var bb = toDecimal(b, base);
+    return fromDecimal(ab * bb);
+}
+
+// Деление a на b в СС base
+function basedDiv(a, b, base)
+{
+    var ab = toDecimal(a, base);
+    var bb = toDecimal(b, base);
+    return fromDecimal(ab / bb);
 }
 
 // Создает число, разбитое на разряды
@@ -222,6 +237,11 @@ function initSplitNumber(n, base)
             return getBasedNumber(this.get(index)).toString();
         },
 
+        // Получает количество цифр
+        length: function() {
+            return Math.abs(this.max) + Math.abs(this.min) + 1;
+        },
+
         // Прибавляет к цифре в разряд
         add: function(index, value) {
             this.set(index, this.get(index) + value);
@@ -231,6 +251,7 @@ function initSplitNumber(n, base)
             this.add(index, -value);
         },
 
+        // Нормализация числа
         normalize: function() {
             for(var i = this.max; i >= this.min; i--) {
                 if(this.get(i) !== 0 || i === 0) {
@@ -257,6 +278,14 @@ function initSplitNumber(n, base)
             }
             return a;
         },
+
+        isLess: function(num) {
+            if(this.max < num.max) return true;
+            for(var i = Math.max(this.max, num.max); i >= Math.min(this.min, num.min); i--) {
+                if(this.get(i) < num.get(i)) return true;
+            }
+            return false;
+        }
     };
     if(isDefined(n)) object.parse(n);
     return object;
@@ -273,4 +302,3 @@ function copySplitNumber(object)
     }
     return newObject;
 }
-
