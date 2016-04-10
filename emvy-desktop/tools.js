@@ -219,7 +219,7 @@ function initSplitNumber(n, base)
         // Если больше, то вернется пустая строка
         getView: function(index) {
             if(index > this.max) return '';
-            return getBasedNumber(this.get(index)).toString().toUpperCase();
+            return getBasedNumber(this.get(index)).toString();
         },
 
         // Прибавляет к цифре в разряд

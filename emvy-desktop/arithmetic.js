@@ -28,19 +28,18 @@ function prepareView()
     label_text_decision.visible =
             label_final_answer.visible = $teacher;
     label_num1_more_num2.visible =
-            $teacher &&
+            $teacher && (action.currentIndex == 1) &&
             (parseFloat(Tools.toDecimal(num1.text, num1_base.value)) <
              parseFloat(Tools.toDecimal(num2.text, num2_base.value)));
 
     label_text_showAs.visible =
             $teacher && (num1_base.value !== num2_base.value);
 
-    Tools.deleteChildren(basedNumber1, basedNumber2, basedResult, basedDecision);
-    row_add_substract_multiply.visible = $teacher && (action.currentIndex <= 2);
+    Tools.deleteChildren(asBasedNumber1, asBasedNumber2, asBasedResult);
+    column_add_substract.visible = $teacher && (action.currentIndex < 2);
 
-    basedDecisionLayout.visible =
-            basedDecision.visible = $teacher && (action.currentIndex === 2);
-
+    Tools.deleteChildren(mulBasedNumber1, mulBasedNumber2, mulBasedResult, mulSingleDigit);
+    column_multiply.visible = $teacher && (action.currentIndex === 2);
 }
 
 // Валидация
@@ -108,7 +107,7 @@ function makeOperation()
 // Сложение
 function addition(an, bn, base1, base2)
 {
-    operation_sign.text = '+';
+    asOperationSign.text = '+';
 
     var $teacher = State.mode !== 'student';
     var a, b;
@@ -130,8 +129,8 @@ function addition(an, bn, base1, base2)
     // ответ
     label_answer.text =
             Strings.printf("{0}<sub>{1}</sub> + {2}<sub>{3}</sub> = {4}<sub>{1}</sub>",
-                           num1.text, num1_base.value,
-                           num2.text, num2_base.value,
+                           num1.text, base1,
+                           num2.text, base2,
                            result.toString());
 
     if(base1 !== 10) {
@@ -142,11 +141,16 @@ function addition(an, bn, base1, base2)
 
     // вывод решения
     if($teacher) {
-        var component = Qt.createComponent("qrc:/components/textcomponent.qml");
+        var component = Qt.createComponent("qrc:/components/NumberComponent.qml");
         for(var i = result.max; i >= result.min; i--) {
-            component.createObject(basedNumber1).text = (i === -1 ? '.' : '') + an.getView(i);
-            component.createObject(basedNumber2).text = (i === -1 ? '.' : '') + bn.getView(i);
-            component.createObject(basedResult).text = (i === -1 ? '.' : '') + result.getView(i);
+            if(i === -1) {
+                component.createObject(asBasedNumber1).text = '.';
+                component.createObject(asBasedNumber2).text = '.';
+                component.createObject(asBasedResult).text = '.';
+            }
+            component.createObject(asBasedNumber1).text = an.getView(i);
+            component.createObject(asBasedNumber2).text = bn.getView(i);
+            component.createObject(asBasedResult).text = result.getView(i);
         }
 
         label_final_answer.text =
@@ -159,7 +163,7 @@ function addition(an, bn, base1, base2)
 // Вычитание
 function substraction(an, bn, base1, base2)
 {
-    operation_sign.text = '-';
+    asOperationSign.text = '-';
 
     // ЕСЛИ an МЕНЬШЕ bn
     var inverseSign = false;
@@ -167,7 +171,7 @@ function substraction(an, bn, base1, base2)
             parseFloat(Tools.toDecimal(bn.toString(), base1))) {
         label_num1_more_num2.text =
                 Strings.printf("{0}<sub>{1}</sub> меньше, чем {2}<sub>{1}</sub>.<br>" +
-                               "Переставим их местами и добавим к ответу минус.",
+                               "Переставим их местами, вычтем и добавим к ответу минус.",
                                an.toString(), base1, bn.toString());
         inverseSign = true;
 
@@ -209,8 +213,8 @@ function substraction(an, bn, base1, base2)
     // ответ
     label_answer.text =
             Strings.printf("{0}<sub>{1}</sub> - {2}<sub>{3}</sub> = {4}{5}<sub>{1}</sub>",
-                           num1.text, num1_base.value,
-                           num2.text, num2_base.value,
+                           num1.text, base1,
+                           num2.text, base2,
                            inverseSign ? '-' : '', result.toString());
     if(base1 !== 10) {
         var resultInDecimalBase = Tools.toDecimal(result.toString(), base1, 5);
@@ -220,11 +224,16 @@ function substraction(an, bn, base1, base2)
 
     // вывод решения
     if($teacher) {
-        var component = Qt.createComponent("qrc:/components/textcomponent.qml");
+        var component = Qt.createComponent("qrc:/components/NumberComponent.qml");
         for(var i = max; i >= min; i--) {
-            component.createObject(basedNumber1).text = (i === -1 ? '.' : '') + acopy.getView(i);
-            component.createObject(basedNumber2).text = (i === -1 ? '.' : '') + bcopy.getView(i);
-            component.createObject(basedResult).text = (i === -1 ? '.' : '') + result.getView(i);
+            if(i === -1) {
+                component.createObject(asBasedNumber1).text = '.';
+                component.createObject(asBasedNumber2).text = '.';
+                component.createObject(asBasedResult).text = '.';
+            }
+            component.createObject(asBasedNumber1).text = acopy.getView(i);
+            component.createObject(asBasedNumber2).text = bcopy.getView(i);
+            component.createObject(asBasedResult).text = result.getView(i);
         }
 
         label_final_answer.text =
@@ -235,8 +244,6 @@ function substraction(an, bn, base1, base2)
 // Умножение
 function multiply(an, bn, base1, base2)
 {
-    operation_sign.text = '*';
-
     var $teacher = State.mode !== 'student';
     var a, b;
     var count = bn.max + Math.abs(bn.min) + 1;
@@ -244,6 +251,8 @@ function multiply(an, bn, base1, base2)
     var el = {};
     var ind1, ind2;
     var max = 0;
+
+    // TODO: пофиксить лидирующие нули
 
     // поэлементное умножение
     for(var i = bn.min; i <= bn.max; i++) {
@@ -265,7 +274,6 @@ function multiply(an, bn, base1, base2)
                 max = el[ind1].max;
             }
         }
-        console.log(el[ind1].toString());
     }
 
     // сложение
@@ -280,38 +288,56 @@ function multiply(an, bn, base1, base2)
         }
     }
 
-    console.log(result.toString());
+    var strResult = result.toString();
+    if(an.min < 0 || bn.min < 0) {
+        var arrayResult = strResult.split('');
+        arrayResult.splice(arrayResult.length - Math.abs(an.min) - Math.abs(bn.min), 0, '.');
+        strResult = arrayResult.join('');
+    }
+
+    // ответ
+    var inverseSign = false;
+    label_answer.text =
+            Strings.printf("{0}<sub>{1}</sub> * {2}<sub>{3}</sub> = {4}{5}<sub>{1}</sub>",
+                           num1.text, base1,
+                           num2.text, base2,
+                           (inverseSign ? '-' : ''), strResult.toString());
+    if(base1 !== 10) {
+        var resultInDecimalBase = Tools.toDecimal(strResult, base1, 5);
+        label_answer.text +=
+                Strings.printf(" = {0}<sub>10</sub>", resultInDecimalBase);
+    }
 
     // вывод решения
     if($teacher) {
-        var textComponent = Qt.createComponent("qrc:/components/textcomponent.qml");
+        var textComponent = Qt.createComponent("qrc:/components/NumberComponent.qml");
         var mulContainerComponent = Qt.createComponent("qrc:/components/MulContainer.qml");
 
         // вывод первого множителя
         for(var i = an.max; i >= an.min; i--) {
-            textComponent.createObject(basedNumber1).text = an.getView(i);
+            textComponent.createObject(mulBasedNumber1).text = an.getView(i);
         }
 
         // вывод второго множителя
         for(var i = bn.max; i >= bn.min; i--) {
-            textComponent.createObject(basedNumber2).text = bn.getView(i);
+            textComponent.createObject(mulBasedNumber2).text = bn.getView(i);
         }
 
         // вывод промежуточного результата
         for(var j = 0; j <= Math.abs(bn.min) + bn.max; j++) {
-            var container = mulContainerComponent.createObject(basedDecision);
+            var container = mulContainerComponent.createObject(mulSingleDigit);
             for(var i = max; i >= 0; i--) {
                 textComponent.createObject(container).text = el[j].getView(i);
             }
         }
 
-        // результирующая линия
-        Qt.createComponent("qrc:/components/ResultLine.qml").createObject(basedResult);
-
         // вывод конечного результата
         for(var i = result.max; i >= result.min; i--) {
-            textComponent.createObject(basedResult).text = result.getView(i);
+            textComponent.createObject(mulBasedResult).text = result.getView(i);
         }
+
+        label_final_answer.text =
+                Strings.printf("Ответ: {0}{1}<sub>{2}</sub>.", inverseSign ? '-' : '', strResult, base1);
     }
 
 

@@ -199,85 +199,138 @@ Item {
                 textFormat: Text.RichText
             }
 
+            /*
+            Text {
+                id: label_text_multiply_without_dots
+                visible: false
+                text: qsTr('Перемножаем числа без учета запятых.')
+            }
+            */
+
+            // Сложение и вычитание
             ColumnLayout {
-                id: row_add_substract_multiply
+                id: column_add_substract
                 visible: false
                 width: children.width
+                spacing: 1
 
-                ColumnLayout {
-                    anchors {
-                        top: parent.top
-                        bottom: parent.bottom
-                    }
+                RowLayout {
+                    Layout.alignment: Qt.AlignRight
 
-                    Text {
-                        id: operation_sign
-                        text: '+'
-                        anchors {
-                            top: parent.top
-                            topMargin: parent.height / 6
-                        }
-                    }
-                }
+                    RowLayout {
+                        Layout.alignment: Qt.AlignVCenter
 
-                ColumnLayout {
-                    spacing: 2
-
-                    Row {
-                        id: basedNumber1
-                        Layout.alignment: Qt.AlignRight
-                        spacing: 1
-                    }
-
-                    Row {
-                        id: basedNumber2
-                        Layout.alignment: Qt.AlignRight
-                        spacing: 1
-                    }
-
-                    ColumnLayout {
-                        id: basedDecisionLayout
-                        visible: false
-
-                        Rectangle {
-                            anchors {
-                                left: parent.left
-                                right: parent.right
-                            }
-                            height: 1
-                            color: "#000000"
+                        Text {
+                            id: asOperationSign
+                            text: '+'
                         }
 
                         ColumnLayout {
-                            id: basedDecision
-                            visible: false
                             spacing: 0
-                        }
-                    }
 
-                    Column {
-                        id: basedResultLayout
-                        visible: true
-
-                        Rectangle {
-                            anchors {
-                                left: parent.left
-                                right: parent.right
+                            Row {
+                                id: asBasedNumber1
+                                spacing: 1
+                                Layout.alignment: Qt.AlignRight
                             }
-                            height: 1
-                            color: "#000000"
-                        }
 
-                        Row {
-                            id: basedResult
-                            Layout.alignment: Qt.AlignRight
-                            spacing: 1
-                            visible: true
+                            Row {
+                                id: asBasedNumber2
+                                spacing: 1
+                                Layout.alignment: Qt.AlignRight
+                            }
                         }
                     }
                 }
+
+                Rectangle {
+                    height: 1
+                    anchors {
+                        left: parent.left
+                        right: parent.right
+                    }
+                    color: '#000000'
+                }
+
+                // Результат
+                Row {
+                    id: asBasedResult
+                    spacing: 1
+                    Layout.alignment: Qt.AlignRight
+                }
             }
 
+            // Умножение
+            ColumnLayout {
+                id: column_multiply
+                visible: false
+                //width: children.width
+                spacing: 1
+
+                RowLayout {
+                    Layout.alignment: Qt.AlignRight
+
+                    RowLayout {
+                        Layout.alignment: Qt.AlignVCenter
+
+                        Text {
+                            text: '*'
+                        }
+
+                        ColumnLayout {
+                            spacing: 0
+
+                            Row {
+                                id: mulBasedNumber1
+                                spacing: 1
+                                Layout.alignment: Qt.AlignRight
+                            }
+
+                            Row {
+                                id: mulBasedNumber2
+                                spacing: 1
+                                Layout.alignment: Qt.AlignRight
+                            }
+                        }
+                    }
+                }
+
+                // линия
+                Rectangle {
+                    height: 1
+                    anchors {
+                        left: parent.left
+                        right: parent.right
+                    }
+                    color: '#000000'
+                    visible: mulSingleDigit.children.length > 1;
+                }
+
+                // промежуточные вычисления
+                ColumnLayout {
+                    id: mulSingleDigit
+                    visible: children.length > 1;
+                }
+
+                // линия
+                Rectangle {
+                    height: 1
+                    anchors {
+                        left: parent.left
+                        right: parent.right
+                    }
+                    color: '#000000'
+                }
+
+                // Результат
+                Row {
+                    id: mulBasedResult
+                    spacing: 1
+                    Layout.alignment: Qt.AlignRight
+                }
+            }
+
+            // Ответ
             Text {
                 id: label_final_answer
                 visible: false

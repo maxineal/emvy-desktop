@@ -12,8 +12,7 @@
         <file>tools.js</file>
     </qresource>
     <qresource prefix="/components">
-        <file>textcomponent.qml</file>
+        <file>NumberComponent.qml</file>
         <file>MulContainer.qml</file>
-        <file>ResultLine.qml</file>
     </qresource>
 </RCC>
