@@ -349,14 +349,102 @@ function multiply(an, bn, base1, base2)
 
 function divide(an, bn, base1, base2)
 {
-    var a, b;
-    var strResult = '';
-
-    var radical = 0;
-    var index = an.max - bn.length();
-    while(radical !== 0 || index >= an.min) {
-
+    var array_an = [];
+    for(var i = an.max; i >= an.min; i--) {
+        array_an.push(an.get(i));
     }
+
+    var dec_bn = parseInt(Tools.toDecimal(bn.toString(false), base1));
+    var array_divident = [];
+    var dec_divident, accuracy = 0;
+    var result = "";
+
+    while((array_an.length > 0) ||
+          ((dec_divident = parseInt(array_divident.join(''))) !== 0) && accuracy < 10) {
+
+        if(array_an.length > 0) {
+            array_divident.push(array_an.shift());
+        }
+        else {
+            array_divident.push(0);
+            if(array_an.length === 0) {
+                if(accuracy === 0) result += ".";
+                accuracy++;
+            }
+        }
+
+        while((dec_divident = parseInt(array_divident.join(''))) < dec_bn && (dec_divident !== 0)) {
+            result += "0";
+
+            if(array_an.length > 0) {
+                array_divident.push(array_an.shift());
+            }
+            else {
+                array_divident.push(0);
+                if(array_an.length === 0 && dec_divident < dec_bn) {
+                    if(accuracy === 0) result += ".";
+                    accuracy++;
+                }
+            }
+        }
+
+        var delta = ~~(dec_divident / dec_bn);
+        result += '' + delta;
+        var radical = dec_divident - (dec_bn * delta);
+        array_divident = radical.toString().split('');
+        console.log(delta);
+    }
+
+    console.log("End");
+
+    /*
+    var anCopy = Tools.copySplitNumber(an);
+    var bnNumber = bn.toString();
+
+    var divident = Tools.initSplitNumber();
+    var dec_bn = parseFloat(Tools.toDecimal(bnNumber, base1));
+    var dec_divident, accuracy = 0;
+    var result = "";
+
+    while(anCopy.length() > 0 ||
+          (((dec_divident = parseFloat(Tools.toDecimal(divident, base1))) !== 0) && accuracy < 5)) {
+
+        // добавляем цифру
+        if(anCopy.length() > 0) {
+            divident.set(-1, anCopy.get(anCopy.max));
+            anCopy.max--;
+        }
+        else {
+            divident.set(-1, 0);
+            accuracy++;
+        }
+
+        while((dec_divident = parseFloat(Tools.toDecimal(divident, base1))) < dec_bn) {
+            result += "0";
+            if(anCopy.length() > 0) {
+                divident.set(-1, anCopy.get(anCopy.max));
+                anCopy.max--;
+            }
+            else {
+                divident.set(-1, 0);
+            }
+
+            if(anCopy.length() <= 0) {
+                if(accuracy === 0) result += ".";
+                accuracy++;
+            }
+        }
+
+        var res = ~~(dec_divident / dec_bn);
+        result += res;
+        var radical = dec_divident - (result * dec_bn);
+        divident.parse(radical);
+        console.log(res);
+
+    }*/
+
+    console.log("Result = " + result);
+
 
 
     /*var $teacher = State.mode !== 'student';
@@ -469,5 +557,5 @@ function divide(an, bn, base1, base2)
         a = decA - (decB * c);
     }*/
 
-    console.log('Result: ' + strResult);
+    //console.log('Result: ' + strResult);
 }

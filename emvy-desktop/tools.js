@@ -223,9 +223,19 @@ function initSplitNumber(n, base)
 
         // Устанавливает цифру в разряд
         set: function(index, value) {
+            if(index === -1) {
+                index = this.min - 1;
+            }
             if(index < this.min) this.min = index;
             if(index > this.max) this.max = index;
             this.digits[index] = value;
+        },
+
+        // Удаляет цифру из разряда
+        remove: function(index) {
+            if(index >= this.min && index <= this.max) {
+                delete this.digits[index];
+            }
         },
 
         // Получает число для отображения
@@ -239,7 +249,11 @@ function initSplitNumber(n, base)
 
         // Получает количество цифр
         length: function() {
-            return Math.abs(this.max) + Math.abs(this.min) + 1;
+            var len = 0;
+            for(var i = this.max; i >= this.min; i--) {
+                if(isDefined(this.digits[i])) len++;
+            }
+            return len;
         },
 
         // Прибавляет к цифре в разряд
@@ -270,10 +284,12 @@ function initSplitNumber(n, base)
             return (index <= this.max && index >= this.min);
         },
 
+        // Возвращает число в виде строки
+        // Если первый аргумент неопределен или равен истине, то строка будет содержать разделяющую запятую.
         toString: function() {
             var a = '';
             for(var i = this.max; i >= this.min; i--) {
-                if(i === -1) a += '.';
+                if(i === -1 && (!isDefined(arguments[0]) || arguments[0])) a += '.';
                 a += getBasedNumber(this.get(i), 36);
             }
             return a;
@@ -302,3 +318,4 @@ function copySplitNumber(object)
     }
     return newObject;
 }
+

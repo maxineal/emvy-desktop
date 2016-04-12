@@ -37,7 +37,7 @@ Item {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 //text: "10448602"
-                text: "1236"
+                text: "578954"
             }
 
             Label {
@@ -117,7 +117,7 @@ Item {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 //text: "da"
-                text: "4"
+                text: "41"
             }
 
             Label {
