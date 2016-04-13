@@ -173,7 +173,7 @@ function basedMul(a, b, base)
 {
     var ab = toDecimal(a, base);
     var bb = toDecimal(b, base);
-    return fromDecimal(ab * bb);
+    return fromDecimal(ab * bb, base);
 }
 
 // Деление a на b в СС base
@@ -181,7 +181,7 @@ function basedDiv(a, b, base)
 {
     var ab = toDecimal(a, base);
     var bb = toDecimal(b, base);
-    return fromDecimal(ab / bb);
+    return fromDecimal(ab / bb, base);
 }
 
 // Создает число, разбитое на разряды

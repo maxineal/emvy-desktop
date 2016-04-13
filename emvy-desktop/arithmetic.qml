@@ -37,7 +37,7 @@ Item {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 //text: "10448602"
-                text: "578954"
+                text: "5f89a4"
             }
 
             Label {
@@ -54,7 +54,7 @@ Item {
                 minimumValue: 2
                 maximumValue: 36
                 stepSize: 1
-                value: 10
+                value: 16
             }
         }
 
@@ -134,7 +134,7 @@ Item {
                 minimumValue: 2
                 maximumValue: 36
                 stepSize: 1
-                value: 10
+                value: 16
             }
         }
     }

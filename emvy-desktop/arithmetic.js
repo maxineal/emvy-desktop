@@ -351,9 +351,10 @@ function divide(an, bn, base1, base2)
 {
     var array_an = [];
     for(var i = an.max; i >= an.min; i--) {
-        array_an.push(an.get(i));
+        array_an.push(an.getView(i));
     }
 
+    var bnNumber = bn.toString();
     var dec_bn = parseInt(Tools.toDecimal(bn.toString(false), base1));
     var array_divident = [];
     var dec_divident, accuracy = 0;
@@ -373,7 +374,7 @@ function divide(an, bn, base1, base2)
             }
         }
 
-        while((dec_divident = parseInt(array_divident.join(''))) < dec_bn && (dec_divident !== 0)) {
+        while((dec_divident = parseInt(array_divident.join(''), base1)) < dec_bn && (dec_divident !== 0)) {
             result += "0";
 
             if(array_an.length > 0) {
@@ -388,9 +389,15 @@ function divide(an, bn, base1, base2)
             }
         }
 
-        var delta = ~~(dec_divident / dec_bn);
+        //var delta = ~~(dec_divident / dec_bn);
+        var divident = array_divident.join('');
+        var delta = Tools.basedDiv(divident, bnNumber, base1);
+        if(delta.toString().indexOf('.') > -1) delta = delta.substr(0, delta.indexOf('.'));
+
         result += '' + delta;
-        var radical = dec_divident - (dec_bn * delta);
+
+        //var radical = dec_divident - (dec_bn * delta);
+        var radical = Tools.basedSub(divident, Tools.basedMul(bnNumber, delta, base1), base1);
         array_divident = radical.toString().split('');
         console.log(delta);
     }
