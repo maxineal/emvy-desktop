@@ -28,7 +28,7 @@ function prepareView()
     label_text_decision.visible =
             label_final_answer.visible = $teacher;
     label_num1_more_num2.visible =
-            $teacher && (action.currentIndex == 1) &&
+            $teacher && (action.currentIndex === 1) &&
             (parseFloat(Tools.toDecimal(num1.text, num1_base.value)) <
              parseFloat(Tools.toDecimal(num2.text, num2_base.value)));
 
@@ -38,10 +38,11 @@ function prepareView()
     Tools.deleteChildren(asBasedNumber1, asBasedNumber2, asBasedResult);
     column_add_substract.visible = $teacher && (action.currentIndex < 2);
 
+
     Tools.deleteChildren(mulBasedNumber1, mulBasedNumber2, mulBasedResult, mulSingleDigit);
     column_multiply.visible = $teacher && (action.currentIndex === 2);
 
-    Tools.deleteChildren(divDevident, divMainBlock, divDivider, divQuotient, div_p);
+    Tools.deleteChildren(divDivident, divMainBlock, div_p);
     column_divide.visible = $teacher && (action.currentIndex === 3);
 }
 
@@ -332,6 +333,7 @@ function multiply(an, bn, base1, base2)
         // вывод промежуточного результата
         for(var j = 0; j <= Math.abs(bn.min) + bn.max; j++) {
             var container = mulContainerComponent.createObject(mulSingleDigit);
+            container.spacing = 1;
             for(var i = max; i >= 0; i--) {
                 textComponent.createObject(container).text = el[j].getView(i);
             }
@@ -343,23 +345,39 @@ function multiply(an, bn, base1, base2)
         }
 
         label_final_answer.text =
-                Strings.printf("Ответ: {0}{1}<sub>{2}</sub>.", inverseSign ? '-' : '', strResult, base1);
+                Strings.printf("Ответ: {0}{1}<sub>{2}</sub>.", inverseSign ? '-' : '', result, base1);
     }
 }
 
+// Деление
 function divide(an, bn, base1, base2)
 {
+    var $teacher = State.mode !== "student";
     var array_an = [];
     for(var i = an.max; i >= an.min; i--) {
         array_an.push(an.getView(i));
     }
 
+    var anNumber = an.toString();
     var bnNumber = bn.toString();
     var dec_bn = parseInt(Tools.toDecimal(bn.toString(false), base1));
     var array_divident = [];
     var dec_divident, accuracy = 0;
+    var array_decision = [];
     var result = "";
 
+    // смещение запятой
+    var offsetDot = 0;
+    if(anNumber.indexOf('.') > -1) {
+        offsetDot -= anNumber.length - anNumber.indexOf('.') - 1;
+    }
+
+    if(bnNumber.indexOf('.') > -1) {
+        offsetDot += bnNumber.length - bnNumber.indexOf('.') - 1;
+        bnNumber = bnNumber.split('.').join('');
+    }
+
+    // производим деление a на b
     while((array_an.length > 0) ||
           ((dec_divident = parseInt(array_divident.join(''))) !== 0) && accuracy < 10) {
 
@@ -376,7 +394,6 @@ function divide(an, bn, base1, base2)
 
         while((dec_divident = parseInt(array_divident.join(''), base1)) < dec_bn && (dec_divident !== 0)) {
             result += "0";
-
             if(array_an.length > 0) {
                 array_divident.push(array_an.shift());
             }
@@ -389,180 +406,114 @@ function divide(an, bn, base1, base2)
             }
         }
 
-        //var delta = ~~(dec_divident / dec_bn);
         var divident = array_divident.join('');
         var delta = Tools.basedDiv(divident, bnNumber, base1);
         if(delta.toString().indexOf('.') > -1) delta = delta.substr(0, delta.indexOf('.'));
-
         result += '' + delta;
 
-        //var radical = dec_divident - (dec_bn * delta);
-        var radical = Tools.basedSub(divident, Tools.basedMul(bnNumber, delta, base1), base1);
+        var delta_mul_bn = Tools.basedMul(bnNumber, delta, base1);
+        var radical = Tools.basedSub(divident, delta_mul_bn, base1);
         array_divident = radical.toString().split('');
-        console.log(delta);
-    }
 
-    console.log("End");
-
-    /*
-    var anCopy = Tools.copySplitNumber(an);
-    var bnNumber = bn.toString();
-
-    var divident = Tools.initSplitNumber();
-    var dec_bn = parseFloat(Tools.toDecimal(bnNumber, base1));
-    var dec_divident, accuracy = 0;
-    var result = "";
-
-    while(anCopy.length() > 0 ||
-          (((dec_divident = parseFloat(Tools.toDecimal(divident, base1))) !== 0) && accuracy < 5)) {
-
-        // добавляем цифру
-        if(anCopy.length() > 0) {
-            divident.set(-1, anCopy.get(anCopy.max));
-            anCopy.max--;
-        }
-        else {
-            divident.set(-1, 0);
-            accuracy++;
-        }
-
-        while((dec_divident = parseFloat(Tools.toDecimal(divident, base1))) < dec_bn) {
-            result += "0";
-            if(anCopy.length() > 0) {
-                divident.set(-1, anCopy.get(anCopy.max));
-                anCopy.max--;
-            }
-            else {
-                divident.set(-1, 0);
-            }
-
-            if(anCopy.length() <= 0) {
-                if(accuracy === 0) result += ".";
-                accuracy++;
-            }
-        }
-
-        var res = ~~(dec_divident / dec_bn);
-        result += res;
-        var radical = dec_divident - (result * dec_bn);
-        divident.parse(radical);
-        console.log(res);
-
-    }*/
-
-    console.log("Result = " + result);
-
-
-
-    /*var $teacher = State.mode !== 'student';
-    var a, b;
-    var decA, decB, decC;
-    var strResult = '';
-
-    // Получаем делитель в десятичной СС
-    b = bn.toString();
-    if(b.indexOf('.') > -1) {
-        b = b.split('.').join('');
-        while(b.substr(0, 1) === '0' && b.length > 1) {
-            b = b.substr(1);
+        if($teacher) {
+            array_decision.push({
+                                    divident: divident.toString().split(''),
+                                    substract: delta_mul_bn.toString().split(''),
+                                    radical: radical.toString().split('')
+                                });
         }
     }
-    decB = parseInt(b, base1);
 
-    a = an.getView(an.max);
-    decA = parseInt(a, base1);
-    var index = an.max; // текущая цифра
-    var accuracy = 0; // цифра после запятой
-    var hasDot = false;
-
-    if(an.isLess(bn)) {
-        strResult += '0.';
-        hasDot = true;
+    // убираем лидирующий нули
+    while(result.length > 1 && result.substr(0, 1) === "0" && result.substr(1, 1) !== ".") {
+        result = result.substr(1);
     }
 
-    while(decA !== 0 || index > an.min) {
-        console.log('Now a = ' + a + '; decA = ' + decA);
-        var preventZero = false;
-
-        // Если текущие делимое меньше делителя
-        while(decA < decB) {
-            a += (an.getView(--index) + '');
-            decA = parseInt(a, base1);
-
-            if(index >= an.min || preventZero) strResult += '0';
-            else if(index < an.min && !preventZero) {
-                preventZero = true;
-            }
-        }
-
-        decC = ~~(decA / decB);
-        strResult += decC.toString(base1);
-        decA -= decB * decC;
-        if(decA === 0) a = '';
-        else a = decA.toString(base1);
-
-        if(index - 1 >= an.min) {
-            a += (an.getView(--index) + '');
-            decA = parseInt(a, base1);
-        }
-        else {
-            if(!hasDot) {
-                strResult += '.';
-                hasDot = true;
-            }
-        }
-    }*/
-
-    // Убираем лидирующие нули в результате
-    /*while(strResult.length > 1 && strResult.substr(0, 1) === '0') {
-        strResult = strResult.substr(1);
+    // устанавливаем запятую
+    if(offsetDot !== 0) {
+        var newPos = result.indexOf('.') + offsetDot;
+        result = result.split('.').join('');
+        result = result.substr(0, newPos) + '.' + result.substr(newPos);
     }
-    var arrayResult = strResult.split('');*/
 
-    /*
+    // вывод ответа
+    var inverseSign = false;
+    label_answer.text =
+            Strings.printf("{0}<sub>{1}</sub> / {2}<sub>{3}</sub> = {4}{5}<sub>{1}</sub>",
+                           num1.text, base1,
+                           num2.text, base2,
+                           (inverseSign ? '-' : ''), result);
+    if(base1 !== 10) {
+        var resultInDecimalBase = Tools.toDecimal(result, base1, 5);
+        label_answer.text +=
+                Strings.printf(" = {0}<sub>10</sub>", resultInDecimalBase);
+    }
+
     if($teacher) {
         var textComponent = Qt.createComponent("qrc:/components/NumberComponent.qml");
-        var rowContainerComponent = Qt.createComponent("qrc:/components/RowContainer.qml");
-        var columnWithLine = Qt.createComponent("qrc:/components/ColumnWithLine.qml");
+        var columnComponent = Qt.createComponent("qrc:/components/ColumnWithLine.qml");
+        var rowComponent = Qt.createComponent("qrc:/components/RowContainer.qml");
 
         // делимое
         for(var i = an.max; i >= an.min; i--) {
-            textComponent.createObject(divDevident).text = an.getView(i);
+            textComponent.createObject(divDivident).text = an.getView(i);
         }
-
-        // промежуточные вычисления в главном блоке
-
 
         // делитель
-        divDivider.text = bn.toString().split('.').join('');
+        divDivider.text = bnNumber;
 
         // частное
-        divQuotient.text = strResult;
-    }*/
+        divQuotient.text = result;
 
-    /*
-    var strResult = '';
-    a = 0;
-    for(var i = an.max; i >= an.min; i--) {
-        if(a === 0) a = an.getView(i);
-        else a += '' + an.getView(i);
-        decA = parseInt(a, base1);
-
-        while(decA < decB) {
-            i--;
-            if(i >= an.min) a += ('' + an.getView(i));
-            else a += '0';
-            decA = parseInt(a, base1);
-            if(i === an.min - 1) strResult += '.';
-            else strResult += '0';
+        // решение
+        // главный блок
+        var decision = array_decision.shift();
+        for(var i = 0; i < decision.substract.length; i++) {
+            textComponent.createObject(divMainBlock).text = decision.substract[i];
         }
 
-        var c = ~~(decA / decB);
-        strResult += c.toString(base1);
+        var childNumber = -1;
+        var columnObj, rowObj;
 
-        console.log('Divide ' + a + " / " + b + ' = ' + Tools.fromDecimal(~~(decA / decB), base1, 5));
-        a = decA - (decB * c);
-    }*/
+        while(array_decision.length > 0) {
+            childNumber++;
+            decision = array_decision.shift();
+            columnObj = columnComponent.createObject(div_p);
+            columnObj.internalId = childNumber;
+            if(childNumber > 0) {
+                columnObj.anchors.leftMargin = -10 * (decision.divident.length - 1);
+            }
 
-    //console.log('Result: ' + strResult);
+            // делимое
+            rowObj = rowComponent.createObject(columnObj);
+            for(var i = 0; i < decision.divident.length; i++) {
+                textComponent.createObject(rowObj).text = decision.divident[i];
+            }
+
+            // отнимаемое
+            rowObj = rowComponent.createObject(columnObj);
+            for(var i = 0; i < decision.substract.length; i++) {
+                textComponent.createObject(rowObj).text = decision.substract[i];
+            }
+        }
+
+        // завершающая линия и остаток
+        childNumber++;
+        columnObj = columnComponent.createObject(div_p);
+        columnObj.internalId = childNumber;
+        if(childNumber > 0) {
+            columnObj.anchors.leftMargin = -10 * (decision.radical.length);
+        }
+
+        // отстаток
+        rowObj = rowComponent.createObject(columnObj);
+        for(var i = 0; i < decision.radical.length; i++) {
+            textComponent.createObject(rowObj).text = decision.radical[i];
+        }
+
+        label_final_answer.text =
+                Strings.printf("Ответ: {0}{1}<sub>{2}</sub>.", inverseSign ? '-' : '', result, base1);
+
+        Tools.deleteObjects(textComponent, columnComponent, rowComponent);
+    }
 }

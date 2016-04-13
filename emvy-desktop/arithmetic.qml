@@ -312,6 +312,7 @@ Item {
 
                 // промежуточные вычисления
                 ColumnLayout {
+                    Layout.alignment: Qt.AlignRight
                     id: mulSingleDigit
                     visible: children.length > 1;
                 }
@@ -337,14 +338,14 @@ Item {
             // Деление
             ColumnLayout {
                 id: column_divide
-                visible: true
+                visible: false
                 spacing: 1
 
                 RowLayout {
                     ColumnLayout {
                         // Делимое
                         Row {
-                            id: divDevident
+                            id: divDivident
                             spacing: 1
                             Layout.alignment: Qt.AlignRight
 
@@ -373,13 +374,14 @@ Item {
                         Row {
                             id: divMainBlock
 
-                            /*
+/*
                             Text {
                                 text: "4"
                                 width: 10
                                 horizontalAlignment: Text.AlignHCenter
                             }
                             */
+
                         }
                     }
 
@@ -396,26 +398,12 @@ Item {
                     ColumnLayout {
                         spacing: 2
 
-                        // Делимое
+                        // Делитель
                         Text {
                             text: ''
                             id: divDivider
                             Layout.alignment: Qt.AlignLeft
                         }
-/*
-                        Row {
-                            id: divDivider
-                            spacing: 1
-                            Layout.alignment: Qt.AlignLeft
-
-                            /*
-                            Text {
-                                text: "4"
-                                width: 10
-                                horizontalAlignment: Text.AlignHCenter
-                            }
-
-                        }*/
 
                         // Линия
                         Rectangle {
@@ -431,38 +419,6 @@ Item {
                         Text {
                             id: divQuotient
                             text: ''
-
-                            /*
-                            Text {
-                                text: "1"
-                                width: 10
-                                horizontalAlignment: Text.AlignHCenter
-                            }
-
-                            Text {
-                                text: "1"
-                                width: 10
-                                horizontalAlignment: Text.AlignHCenter
-                            }
-
-                            Text {
-                                text: "6"
-                                width: 10
-                                horizontalAlignment: Text.AlignHCenter
-                            }
-
-                            Text {
-                                text: "."
-                                width: 10
-                                horizontalAlignment: Text.AlignHCenter
-                            }
-
-                            Text {
-                                text: "5"
-                                width: 10
-                                horizontalAlignment: Text.AlignHCenter
-                            }
-                            */
                         }
                     }
                 }
@@ -470,153 +426,8 @@ Item {
                 // Промежуточные вычисления
                 ColumnLayout {
                     id: div_p
-
-                    /*
-                    ColumnLayout {
-                        Rectangle {
-                            color: '#000000'
-                            height: 1
-                            anchors {
-                                left: parent.left
-                                right: parent.right
-                            }
-                        }
-
-                        Row {
-                            Text {
-                                text: " "
-                                width: 10
-                                horizontalAlignment: Text.AlignHCenter
-                            }
-
-                            Text {
-                                text: "6"
-                                width: 10
-                                horizontalAlignment: Text.AlignHCenter
-                            }
-                        }
-
-                        Row {
-                            Layout.alignment: Qt.AlignRight
-
-                            Text {
-                                text: "4"
-                                width: 10
-                                horizontalAlignment: Text.AlignHCenter
-                            }
-                        }
-                    }
-
-                    ColumnLayout {
-                        anchors.left: div_p.children[0].right
-                        anchors.leftMargin: -10
-
-                        Rectangle {
-                            color: '#000000'
-                            height: 1
-                            anchors {
-                                left: parent.left
-                                right: parent.right
-                            }
-                        }
-
-                        Row {
-                            Text {
-                                text: "2"
-                                width: 10
-                                horizontalAlignment: Text.AlignHCenter
-                            }
-
-                            Text {
-                                text: "6"
-                                width: 10
-                                horizontalAlignment: Text.AlignHCenter
-                            }
-                        }
-
-                        Row {
-                            Layout.alignment: Qt.AlignRight
-
-                            Text {
-                                text: "2"
-                                width: 10
-                                horizontalAlignment: Text.AlignHCenter
-                            }
-
-                            Text {
-                                text: "4"
-                                width: 10
-                                horizontalAlignment: Text.AlignHCenter
-                            }
-                        }
-                    }
-
-                    ColumnLayout {
-                        anchors.left: div_p.children[1].right
-                        anchors.leftMargin: -10
-
-                        Rectangle {
-                            color: '#000000'
-                            height: 1
-                            anchors {
-                                left: parent.left
-                                right: parent.right
-                            }
-                        }
-
-                        Row {
-                            Text {
-                                text: "2"
-                                width: 10
-                                horizontalAlignment: Text.AlignHCenter
-                            }
-
-                            Text {
-                                text: "0"
-                                width: 10
-                                horizontalAlignment: Text.AlignHCenter
-                            }
-                        }
-
-                        Row {
-                            Layout.alignment: Qt.AlignRight
-
-                            Text {
-                                text: "2"
-                                width: 10
-                                horizontalAlignment: Text.AlignHCenter
-                            }
-
-                            Text {
-                                text: "0"
-                                width: 10
-                                horizontalAlignment: Text.AlignHCenter
-                            }
-                        }
-                    }
-
-                    ColumnLayout {
-                        anchors.left: div_p.children[2].right
-                        anchors.leftMargin: -10
-
-                        Rectangle {
-                            color: '#000000'
-                            height: 1
-                            anchors {
-                                left: parent.left
-                                right: parent.right
-                            }
-                        }
-
-                        Row {
-                            Text {
-                                text: "0"
-                                width: 10
-                                horizontalAlignment: Text.AlignHCenter
-                            }
-                        }
-                    }
-                    */
+                    spacing: 1
+                    width: children.width
                 }
             }
 

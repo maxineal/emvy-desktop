@@ -114,7 +114,7 @@ function isNumber(n, base, options)
     var dotFound = false;
     for(var i = 0; i < s.length; i++) {
         c = s.substr(i, 1);
-        if(c === '.') {
+        if(c === '.' || c === ',') {
             if(i === 0 || !allowDot || dotFound) return false;
             dotFound = true;
             continue;
@@ -150,6 +150,14 @@ function cloneObject(obj)
         if(obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
     }
     return copy;
+}
+
+// Удаляет объекты
+function deleteObjects()
+{
+    for(var i = 0; i < arguments.length; i++) {
+        delete arguments[i];
+    }
 }
 
 // Сложение a, b в системе счисления base
@@ -319,3 +327,11 @@ function copySplitNumber(object)
     return newObject;
 }
 
+// Возвращает индекс дочернего элемента из его ID
+function getChildIndexByInternalId(parent, id)
+{
+    for(var i = 0; i < parent.children.length; i++) {
+        if(parent.children[i].internalId === id) return i;
+    }
+    return 0;
+}
