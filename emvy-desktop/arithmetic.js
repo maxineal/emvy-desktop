@@ -64,14 +64,18 @@ function validate()
                     });
         return false;
     }
+    if(action.currentIndex === 3 && parseFloat(num2.text) === 0) {
+        Main.msgBox("Нельзя делить на ноль.");
+        return false;
+    }
     return true;
 }
 
 // Выполнение операции
 function makeOperation()
 {
-    var n1 = num1.text;
-    var n2 = num2.text;
+    var n1 = num1.text.split(',').join('.');
+    var n2 = num2.text.split(',').join('.');
     var primaryBase = num1_base.value;
     var secondaryBase = num2_base.value;
 
@@ -361,6 +365,16 @@ function divide(an, bn, base1, base2)
     var string_an = an.toString();
     var string_bn = bn.toString();
 
+    var offsetDot = 0;
+    // определение запятой
+    if(string_an.indexOf('.') > -1) {
+        offsetDot -= string_an.length - string_an.indexOf('.') - 1;
+    }
+    if(string_bn.indexOf('.') > -1) {
+        offsetDot += string_bn.length - string_bn.indexOf('.') - 1;
+        string_bn = string_bn.split('.').join('');
+    }
+
     // числа в десятичной СС
     var dec_div;
     var dec_bn = parseFloat(Tools.toDecimal(string_bn, base1));
@@ -377,7 +391,6 @@ function divide(an, bn, base1, base2)
     }
 
     var result = "";
-
     while((array_an.length > 0) ||
           (array_div.length > 0 && accuracy < 11)) {
 
@@ -449,6 +462,13 @@ function divide(an, bn, base1, base2)
     // Очищаем от лидирующих нулей и завершающих нулей
     while(result.length > 0 && result.substr(result.length - 1, 1) === "0") result = result.substring(0, result.length - 1);
     while(result.length > 0 && result.substr(0, 1) === "0" && result.substr(1, 1) !== ".") result = result.substr(1);
+
+    // устанавливаем запятую
+    if(offsetDot !== 0) {
+        var newPos = result.indexOf('.') + offsetDot;
+        result = result.split('.').join('');
+        result = result.substr(0, newPos) + '.' + result.substr(newPos);
+    }
 
     // Если есть точка в конце результата
     if(result.length > 0 && result.substr(result.length - 1, 1) === '.') result = result.substr(0, result.length - 1);
