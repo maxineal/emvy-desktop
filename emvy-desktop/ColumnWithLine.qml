@@ -4,7 +4,11 @@ import "qrc:/tools.js" as Tools
 
 ColumnLayout {
     property int internalId
-    anchors.left: (internalId === 0) ? parent.left : parent.children[Tools.getChildIndexByInternalId(parent, internalId - 1)].right;
+
+    anchors.left: (internalId === 0) ? parent.left :
+                                       parent.children[Tools.getChildIndexByInternalId(parent, internalId - 1)].right;
+
+
     width: children.width
     spacing: 1
 
@@ -14,6 +18,14 @@ ColumnLayout {
         anchors {
             left: parent.left
             right: parent.right
+        }
+    }
+
+    MouseArea {
+        anchors.fill: parent
+
+        onClicked: {
+            console.log(Tools.getLastChild(divMainBlock));
         }
     }
 

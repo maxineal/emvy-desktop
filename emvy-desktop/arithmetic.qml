@@ -36,8 +36,8 @@ Item {
                 placeholderText: qsTr("Число 1")
                 anchors.left: parent.left
                 anchors.right: parent.right
-                //text: "10448602"
-                text: "5f89a4"
+                text: "10448602"
+                //text: "10"
             }
 
             Label {
@@ -54,7 +54,7 @@ Item {
                 minimumValue: 2
                 maximumValue: 36
                 stepSize: 1
-                value: 16
+                value: 10
             }
         }
 
@@ -116,8 +116,8 @@ Item {
                 placeholderText: qsTr("Число 2")
                 anchors.left: parent.left
                 anchors.right: parent.right
-                //text: "da"
-                text: "41"
+                text: "208"
+                //text: "1110"
             }
 
             Label {
@@ -134,7 +134,7 @@ Item {
                 minimumValue: 2
                 maximumValue: 36
                 stepSize: 1
-                value: 16
+                value: 10
             }
         }
     }
@@ -335,6 +335,7 @@ Item {
                 }
             }
 
+            // ----------------------------------------------------------------------
             // Деление
             ColumnLayout {
                 id: column_divide
@@ -348,40 +349,13 @@ Item {
                             id: divDivident
                             spacing: 1
                             Layout.alignment: Qt.AlignRight
-
-                            /*
-                            Text {
-                                text: "4"
-                                width: 10
-                                horizontalAlignment: Text.AlignHCenter
-                            }
-
-                            Text {
-                                text: "6"
-                                width: 10
-                                horizontalAlignment: Text.AlignHCenter
-                            }
-
-                            Text {
-                                text: "6"
-                                width: 10
-                                horizontalAlignment: Text.AlignHCenter
-                            }
-                            */
                         }
 
                         // Главный блок, промежуточные вычисления
                         Row {
                             id: divMainBlock
-
-/*
-                            Text {
-                                text: "4"
-                                width: 10
-                                horizontalAlignment: Text.AlignHCenter
-                            }
-                            */
-
+                            spacing: 1
+                            anchors.left: parent.left
                         }
                     }
 
@@ -396,7 +370,7 @@ Item {
                     }
 
                     ColumnLayout {
-                        spacing: 2
+                        spacing: 1
 
                         // Делитель
                         Text {

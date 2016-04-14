@@ -51,7 +51,7 @@ function toDecimal(n, base, accuracy)
 function fromDecimal(n, base, accuracy)
 {
     if(base === 10) {
-        if(n.toString().indexOf('.') > -1) {
+        if(n.toString().indexOf('.') > -1 && isDefined(accuracy)) {
             return n.toFixed(accuracy);
         }
         return n;
@@ -165,7 +165,7 @@ function basedAdd(a, b, base)
 {
     var ab = toDecimal(a, base);
     var bb = toDecimal(b, base);
-    return fromDecimal(ab + bb, base);
+    return fromDecimal(ab + bb, base).toString();
 }
 
 // Вычитание b из a, в системе счисления base
@@ -173,7 +173,7 @@ function basedSub(a, b, base)
 {
     var ab = toDecimal(a, base);
     var bb = toDecimal(b, base);
-    return fromDecimal(ab - bb, base);
+    return fromDecimal(ab - bb, base).toString();
 }
 
 // Умножение a на b в СС base
@@ -181,7 +181,7 @@ function basedMul(a, b, base)
 {
     var ab = toDecimal(a, base);
     var bb = toDecimal(b, base);
-    return fromDecimal(ab * bb, base);
+    return fromDecimal(ab * bb, base).toString();
 }
 
 // Деление a на b в СС base
@@ -189,7 +189,7 @@ function basedDiv(a, b, base)
 {
     var ab = toDecimal(a, base);
     var bb = toDecimal(b, base);
-    return fromDecimal(ab / bb, base);
+    return fromDecimal(ab / bb, base).toString();
 }
 
 // Создает число, разбитое на разряды
@@ -334,4 +334,18 @@ function getChildIndexByInternalId(parent, id)
         if(parent.children[i].internalId === id) return i;
     }
     return 0;
+}
+
+// Возвращает первый дочерний элемент
+function getFirstChild(parent)
+{
+    if(parent.children.length === 0) return parent;
+    return parent.children[0];
+}
+
+// Возвращает последний дочерний элемент
+function getLastChild(parent)
+{
+    if(parent.children.length === 0) return parent;
+    return parent.children[parent.children.length - 1];
 }

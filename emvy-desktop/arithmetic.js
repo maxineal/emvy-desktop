@@ -288,10 +288,10 @@ function multiply(an, bn, base1, base2)
     for(var i = 0; i <= max; i++) {
         for(var j = 0; j <= Math.abs(bn.min) + bn.max; j++) {
             result.add(i, el[j].get(i));
-            if(result.get(i) >= base1) {
-                result.set(i, ~~(result.get(i) / base1));
-                result.set(i, result.get(i) % base1);
-            }
+        }
+        if(result.get(i) >= base1) {
+            result.set(i + 1, ~~(result.get(i) / base1));
+            result.set(i, result.get(i) % base1);
         }
     }
 
@@ -345,7 +345,7 @@ function multiply(an, bn, base1, base2)
         }
 
         label_final_answer.text =
-                Strings.printf("Ответ: {0}{1}<sub>{2}</sub>.", inverseSign ? '-' : '', result, base1);
+                Strings.printf("Ответ: {0}{1}<sub>{2}</sub>.", inverseSign ? '-' : '', strResult.toString(), base1);
     }
 }
 
@@ -353,90 +353,107 @@ function multiply(an, bn, base1, base2)
 function divide(an, bn, base1, base2)
 {
     var $teacher = State.mode !== "student";
+
     var array_an = [];
-    for(var i = an.max; i >= an.min; i--) {
-        array_an.push(an.getView(i));
+    for(var i = an.max; i >= an.min; i--) array_an.push(an.getView(i));
+
+    // числа в строковой форме
+    var string_an = an.toString();
+    var string_bn = bn.toString();
+
+    // числа в десятичной СС
+    var dec_div;
+    var dec_bn = parseFloat(Tools.toDecimal(string_bn, base1));
+
+    // точность после запятой
+    var accuracy = 0;
+
+    // решение
+    var array_decision = [];
+
+    var array_div = [];
+    for(var i = 0; i < string_bn.length && array_an.length > 0; i++) {
+        array_div.push(array_an.shift());
     }
 
-    var anNumber = an.toString();
-    var bnNumber = bn.toString();
-    var dec_bn = parseInt(Tools.toDecimal(bn.toString(false), base1));
-    var array_divident = [];
-    var dec_divident, accuracy = 0;
-    var array_decision = [];
     var result = "";
 
-    // смещение запятой
-    var offsetDot = 0;
-    if(anNumber.indexOf('.') > -1) {
-        offsetDot -= anNumber.length - anNumber.indexOf('.') - 1;
-    }
-
-    if(bnNumber.indexOf('.') > -1) {
-        offsetDot += bnNumber.length - bnNumber.indexOf('.') - 1;
-        bnNumber = bnNumber.split('.').join('');
-    }
-
-    // производим деление a на b
     while((array_an.length > 0) ||
-          ((dec_divident = parseInt(array_divident.join(''))) !== 0) && accuracy < 10) {
+          (array_div.length > 0 && accuracy < 11)) {
 
-        if(array_an.length > 0) {
-            array_divident.push(array_an.shift());
-        }
-        else {
-            array_divident.push(0);
-            if(array_an.length === 0) {
-                if(accuracy === 0) result += ".";
-                accuracy++;
+        while((dec_div = parseInt(array_div.join(''), base1)) < dec_bn && (dec_div !== 0)) {
+            if($teacher && array_an.length === 0) {
+                array_decision.push({
+                                        div: array_div.slice(),
+                                        sub: [0],
+                                        radical: array_div.slice(),
+                                    });
             }
-        }
 
-        while((dec_divident = parseInt(array_divident.join(''), base1)) < dec_bn && (dec_divident !== 0)) {
             result += "0";
             if(array_an.length > 0) {
-                array_divident.push(array_an.shift());
+                array_div.push(array_an.shift());
             }
             else {
-                array_divident.push(0);
-                if(array_an.length === 0 && dec_divident < dec_bn) {
+                array_div.push(0);
+                if(array_an.length === 0) {
                     if(accuracy === 0) result += ".";
                     accuracy++;
                 }
             }
         }
 
-        var divident = array_divident.join('');
-        var delta = Tools.basedDiv(divident, bnNumber, base1);
-        if(delta.toString().indexOf('.') > -1) delta = delta.substr(0, delta.indexOf('.'));
-        result += '' + delta;
+        var div = array_div.join('');
+        var quetient = Tools.basedDiv(div, string_bn, base1).toString();
 
-        var delta_mul_bn = Tools.basedMul(bnNumber, delta, base1);
-        var radical = Tools.basedSub(divident, delta_mul_bn, base1);
-        array_divident = radical.toString().split('');
+        // Если число дробное, сохраняем целую часть
+        if(quetient.indexOf('.') > -1) quetient = quetient.substr(0, quetient.indexOf('.'));
 
-        if($teacher) {
-            array_decision.push({
-                                    divident: divident.toString().split(''),
-                                    substract: delta_mul_bn.toString().split(''),
-                                    radical: radical.toString().split('')
-                                });
+        result += '' + quetient;
+
+        // Произведение неполного частного и делимого
+        var multiply = Tools.basedMul(string_bn, quetient, base1);
+
+        // Ищем остаток
+        var radical = Tools.basedSub(div, multiply, base1);
+
+        // Сохраняем решение
+        array_decision.push({
+                                div: array_div.slice(),
+                                sub: multiply.split(''),
+                                radical: radical.split('')
+                            });
+
+        // Переносим остаток в следущее действие
+        array_div = radical.toString().split('');
+
+        // Следущая цифра
+        if(array_an.length > 0) {
+            array_div.push(array_an.shift());
+        }
+        else {
+            array_div.push(0);
+            if(array_an.length === 0) {
+                if(accuracy === 0) result += ".";
+                accuracy++;
+            }
+        }
+
+        // Если цифр больше нет, а остаток равен нулю
+        if(array_an.length === 0 && (dec_div = parseInt(array_div.join(''), base1)) === 0) {
+            result += "0";
+            break;
         }
     }
 
-    // убираем лидирующий нули
-    while(result.length > 1 && result.substr(0, 1) === "0" && result.substr(1, 1) !== ".") {
-        result = result.substr(1);
-    }
+    // Очищаем от лидирующих нулей и завершающих нулей
+    while(result.length > 0 && result.substr(result.length - 1, 1) === "0") result = result.substring(0, result.length - 1);
+    while(result.length > 0 && result.substr(0, 1) === "0" && result.substr(1, 1) !== ".") result = result.substr(1);
 
-    // устанавливаем запятую
-    if(offsetDot !== 0) {
-        var newPos = result.indexOf('.') + offsetDot;
-        result = result.split('.').join('');
-        result = result.substr(0, newPos) + '.' + result.substr(newPos);
-    }
+    // Если есть точка в конце результата
+    if(result.length > 0 && result.substr(result.length - 1, 1) === '.') result = result.substr(0, result.length - 1);
 
-    // вывод ответа
+    // Вывод ответа
     var inverseSign = false;
     label_answer.text =
             Strings.printf("{0}<sub>{1}</sub> / {2}<sub>{3}</sub> = {4}{5}<sub>{1}</sub>",
@@ -460,40 +477,55 @@ function divide(an, bn, base1, base2)
         }
 
         // делитель
-        divDivider.text = bnNumber;
+        divDivider.text = string_bn;
 
         // частное
         divQuotient.text = result;
 
+        // -------------------------------
         // решение
-        // главный блок
-        var decision = array_decision.shift();
-        for(var i = 0; i < decision.substract.length; i++) {
-            textComponent.createObject(divMainBlock).text = decision.substract[i];
-        }
 
+        // главный блок
         var childNumber = -1;
         var columnObj, rowObj;
+
+        // главный блок
+        var decision = array_decision.shift();
+        var lastDivLen = decision.div.length;
+        var lastSubLen = decision.sub.length;
+        var lastRadLen = decision.radical.length;
+        var lastDelta  = lastDivLen - lastSubLen;
+        divMainBlock.anchors.leftMargin = 10 * lastDelta;
+        for(var i = 0; i < decision.sub.length; i++) {
+            textComponent.createObject(divMainBlock).text = decision.sub[i];
+        }
 
         while(array_decision.length > 0) {
             childNumber++;
             decision = array_decision.shift();
             columnObj = columnComponent.createObject(div_p);
             columnObj.internalId = childNumber;
-            if(childNumber > 0) {
-                columnObj.anchors.leftMargin = -10 * (decision.divident.length - 1);
+            if(childNumber === 0) {
+                columnObj.anchors.leftMargin = 10 * (lastDelta + lastSubLen - lastRadLen);
             }
+            else {
+                columnObj.anchors.leftMargin = -10 * (lastRadLen);
+            }
+
+            lastDivLen = decision.div.length;
+            lastSubLen = decision.sub.length;
+            lastRadLen = decision.radical.length;
 
             // делимое
             rowObj = rowComponent.createObject(columnObj);
-            for(var i = 0; i < decision.divident.length; i++) {
-                textComponent.createObject(rowObj).text = decision.divident[i];
+            for(var i = 0; i < decision.div.length; i++) {
+                textComponent.createObject(rowObj).text = decision.div[i];
             }
 
             // отнимаемое
             rowObj = rowComponent.createObject(columnObj);
-            for(var i = 0; i < decision.substract.length; i++) {
-                textComponent.createObject(rowObj).text = decision.substract[i];
+            for(var i = 0; i < decision.sub.length; i++) {
+                textComponent.createObject(rowObj).text = decision.sub[i];
             }
         }
 
@@ -501,8 +533,11 @@ function divide(an, bn, base1, base2)
         childNumber++;
         columnObj = columnComponent.createObject(div_p);
         columnObj.internalId = childNumber;
-        if(childNumber > 0) {
-            columnObj.anchors.leftMargin = -10 * (decision.radical.length);
+        if(childNumber === 0) {
+            columnObj.anchors.leftMargin = 10 * (lastDelta + lastSubLen - lastRadLen);
+        }
+        else {
+            columnObj.anchors.leftMargin = -10 * (lastRadLen);
         }
 
         // отстаток
