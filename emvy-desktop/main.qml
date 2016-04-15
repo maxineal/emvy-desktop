@@ -21,9 +21,15 @@ ApplicationWindow {
                 text: qsTr("&Системы счисления")
                 onTriggered: Main.selectQml("translateform.qml");
             }
+
             MenuItem {
                 text: qsTr("&Арифметика")
                 onTriggered: Main.selectQml("arithmetic.qml");
+            }
+
+            MenuItem {
+                text: qsTr("&Перевод BCD");
+                onTriggered: Main.selectQml("bcd_translate.qml");
             }
 
             MenuItem {
@@ -59,7 +65,7 @@ ApplicationWindow {
         anchors.fill: parent
 
         // Загрузка начального экрана
-        Component.onCompleted: Main.selectQml("arithmetic.qml");
+        Component.onCompleted: Main.selectQml("bcd_translate.qml");
     }
 
     /***

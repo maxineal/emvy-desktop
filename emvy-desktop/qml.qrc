@@ -10,6 +10,8 @@
         <file>strings.js</file>
         <file>arithmetic.js</file>
         <file>tools.js</file>
+        <file>bcd_translate.qml</file>
+        <file>bcd_translate.js</file>
     </qresource>
     <qresource prefix="/components">
         <file>NumberComponent.qml</file>

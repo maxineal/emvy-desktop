@@ -51,6 +51,7 @@ function validate()
 {
     if(num1.text.length === 0 || num2.text.length === 0) {
         Main.msgBox(qsTr("Введите число."));
+        return false;
     }
     if(!Tools.isNumber(num1.text, num1_base.value)) {
         Main.msgBox("Число 1 введено неправильно.", {
