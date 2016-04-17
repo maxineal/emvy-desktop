@@ -31,7 +31,9 @@ function prepareView(state)
     label_text_decision.visible =
             state && $teacher;
 
-    column_add.visible = state && $teacher && comboBox_action.currentIndex === 0;
+    column_add.visible = state && $teacher && comboBox_action.currentIndex <= 1;
+
+    label_add_sign1.text = label_add_sign2.text = comboBox_action.currentIndex === 0 ? "+" : "-";
 
     Tools.deleteChildren(row_add_number1, row_add_number2, row_add_sum, row_add_correction, row_add_result);
 }
@@ -132,7 +134,7 @@ function add(an, bn)
                                        an.toString(), bn.toString(), Tools.fixBcd(result.toString()));
 
     var hasCorrector = Strings.replace(corrector, '0.', '').length > 0;
-    label_add_second_plus.visible =
+    label_add_sign2.visible =
             line_add_second.visible =
             row_add_correction.visible =
             row_add_sum.visible =
@@ -166,9 +168,102 @@ function add(an, bn)
 }
 
 // Вычитание
-function sub()
+function sub(an, bn)
 {
+    var max = Math.max(an.max, bn.max);
+    var min = Math.min(an.min, bn.min);
+    var c = Tools.initBcdObject(0);
+    var correctionIndices = [];
+    var acopy = Tools.copyBcdObject(an);
 
+    // двоичное вычитание
+    var a, b;
+    var tetradIndex = 0;
+    for(var i = min; i <= max; i++) {
+        a = an.get(i);
+        b = bn.get(i);
+        if(a < b) {
+            tetradIndex = ~~(i / 4);
+            for(var j = i + 1; j <= max; j++) {
+                if(an.get(j) !== 0)
+                {
+                    // межтетрадный перенос
+                    if(~~(j / 4) !== tetradIndex) {
+                        correctionIndices.push(tetradIndex);
+                    }
+                    an.sub(j, 1);
+                    a += 2;
+                    for(var k = j - 1; k > i; k--) {
+                        an.set(k, 1);
+                    }
+                    break;
+                }
+            }
+        }
+        c.set(i, a - b);
+    }
+
+    // коррекция
+    var result = Tools.initBcdObject(0);
+    for(var i = c.maxTetrad; i >= c.minTetrad; i--) {
+        var tetrad = c.getTetrad(i);
+        if(correctionIndices.indexOf(i) > -1) {
+            var s = Tools.basedSub(tetrad, "0110", 2);
+            result.setTetrad(i, s);
+        }
+        else
+        {
+            result.setTetrad(i, c.getTetrad(i));
+        }
+    }
+
+    // вывод
+    label_answer.text = Strings.printf("{0}<sub>bcd</sub> - {1}<sub>bcd</sub> = {2}<sub>bcd</sub>.",
+                                       an.toString(), bn.toString(), Tools.fixBcd(result.toString()));
+
+
+    label_add_sign2.visible =
+            line_add_second.visible =
+            row_add_correction.visible =
+            row_add_sum.visible =
+            correctionIndices.length > 0;
+
+    if(State.mode !== "student") {
+        var textComponent = Qt.createComponent("qrc:/components/NumberComponent.qml");
+
+        max = Math.max(an.max, bn.max, c.max);
+        while((max + 1) % 4 !== 0) max++;
+        min = Math.min(an.min, bn.min, c.min);
+        while((min) % 4 !== 0) min--;
+
+        var corrector = [0, 1, 1, 0];
+        var tetradIndex, tetradDiv;
+
+        for(var i = max; i >= min; i--) {
+            if((i + 1) % 4 === 0 && i !== max) {
+                var txt = (i === -1 ? "." : " ")
+                textComponent.createObject(row_add_number1).text = txt;
+                textComponent.createObject(row_add_number2).text = txt;
+                textComponent.createObject(row_add_sum).text = txt;
+                textComponent.createObject(row_add_correction).text = txt;
+                textComponent.createObject(row_add_result).text = txt;
+            }
+
+            tetradIndex = ~~(i / 4);
+            tetradDiv = i - (~~(i / 4));
+
+            textComponent.createObject(row_add_number1).text = acopy.getView(i);
+            textComponent.createObject(row_add_number2).text = bn.getView(i);
+            textComponent.createObject(row_add_sum).text = c.getView(i);
+            textComponent.createObject(row_add_correction).text =
+                    (correctionIndices.indexOf(tetradIndex) > -1 ? corrector[tetradDiv] : 0);
+            textComponent.createObject(row_add_result).text = result.getView(i);
+        }
+    }
+
+    console.log(correctionIndices);
+    console.log(c.toString());
+    console.log(result.toString());
 }
 
 // Умножение

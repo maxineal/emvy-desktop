@@ -40,7 +40,8 @@ Item {
                     right: parent.right
                 }
                 //text: "00010101010000110101"
-                text: "0111100101100101.0001"
+                //text: "0111100101100101.0001"
+                text: "00010101"
             }
         }
 
@@ -64,6 +65,7 @@ Item {
                     right: parent.right
                 }
                 model: ["сложение", "вычитание", "умножение"];
+                currentIndex: 1
             }
         }
 
@@ -89,7 +91,8 @@ Item {
                     right: parent.right
                 }
                 //text: "00011001000100110001"
-                text: "1001100001110110"
+                //text: "1001100001110110"
+                text: "00001001"
             }
         }
     }
@@ -161,6 +164,7 @@ Item {
                     Layout.alignment: Qt.AlignVCenter
 
                     Text {
+                        id: label_add_sign1
                         text: '+'
                     }
 
@@ -194,7 +198,7 @@ Item {
                     Layout.alignment: Qt.AlignVCenter
 
                     Text {
-                        id: label_add_second_plus
+                        id: label_add_sign2
                         text: '+'
                     }
 
@@ -228,7 +232,6 @@ Item {
                 // Результат
                 RowLayout {
                     id: row_add_result
-                //    anchors.left: row_add_sum.left
                     spacing: 1
                     Layout.alignment: Qt.AlignRight
                 }

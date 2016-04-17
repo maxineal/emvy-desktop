@@ -400,8 +400,22 @@ function initBcdObject(bcd)
             return data;
         },
 
+        setTetrad: function(index, data) {
+            data = fixBcd(data).split('');
+            var min = (index * 4);
+            var max = min + 3;
+            for(var i = max, p = 0; i >= min; i--, p++) {
+                this.set(i, parseInt(data[p], 2));
+            }
+        },
+
         getTetradDecimal: function(index) {
             return parseInt(this.getTetrad(index), 2);
+        },
+
+        setTetradDecimal: function(index, dec) {
+            var bcd = fixBcd(dec.toString());
+            this.setTetrad(index, bcd);
         },
 
         // Прибавляет к цифре в разряд
@@ -428,10 +442,17 @@ function initBcdObject(bcd)
     return object;
 }
 
+// Копирует число в новый объект
+function copyBcdObject(object)
+{
+    var newObject = initBcdObject(object.toString());
+    return newObject;
+}
+
 // Добавляет нули в код BCD
 function fixBcd(bcd, packed)
 {
-    var bcd = bcd.toString();
+    bcd = bcd.toString();
     var fromBack = bcd.indexOf('.');
     if(fromBack > -1) {
         fromBack = bcd.length - fromBack;
