@@ -38,6 +38,11 @@ ApplicationWindow {
             }
 
             MenuItem {
+                text: qsTr("&Коды Хаффмана, Шеннона-Фано");
+                onTriggered: Main.selectQml("encoding.qml");
+            }
+
+            MenuItem {
                 text: qsTr("&Очистка")
                 onTriggered: Main.clearLayout();
             }
@@ -70,7 +75,7 @@ ApplicationWindow {
         anchors.fill: parent
 
         // Загрузка начального экрана
-        Component.onCompleted: Main.selectQml("bcd_arithmetic.qml");
+        Component.onCompleted: Main.selectQml("encoding.qml");
     }
 
     /***
