@@ -12,3 +12,11 @@ function printf(str)
     }
     return str;
 }
+
+function replace(str, replace, needle)
+{
+    for(var i = 0; i < replace.length; i++) {
+        str = str.split(replace.substr(i, 1)).join(needle);
+    }
+    return str;
+}

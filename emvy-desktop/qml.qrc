@@ -12,6 +12,8 @@
         <file>tools.js</file>
         <file>bcd_translate.qml</file>
         <file>bcd_translate.js</file>
+        <file>bcd_arithmetic.qml</file>
+        <file>bcd_arithmetic.js</file>
     </qresource>
     <qresource prefix="/components">
         <file>NumberComponent.qml</file>

@@ -33,6 +33,11 @@ ApplicationWindow {
             }
 
             MenuItem {
+                text: qsTr("А&рифметические операции BCD");
+                onTriggered: Main.selectQml("bcd_arithmetic.qml");
+            }
+
+            MenuItem {
                 text: qsTr("&Очистка")
                 onTriggered: Main.clearLayout();
             }
@@ -65,7 +70,7 @@ ApplicationWindow {
         anchors.fill: parent
 
         // Загрузка начального экрана
-        Component.onCompleted: Main.selectQml("bcd_translate.qml");
+        Component.onCompleted: Main.selectQml("bcd_arithmetic.qml");
     }
 
     /***

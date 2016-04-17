@@ -231,7 +231,7 @@ function initSplitNumber(n, base)
 
         // Устанавливает цифру в разряд
         set: function(index, value) {
-            if(index === -1) {
+            if(index === "-infinity") {
                 index = this.min - 1;
             }
             if(index < this.min) this.min = index;
@@ -325,6 +325,139 @@ function copySplitNumber(object)
         newObject.digits[i] = object.digits[i];
     }
     return newObject;
+}
+
+function initBcdObject(bcd)
+{
+    var object = {
+        min: 0,
+        max: 0,
+        minTetrad: 0,
+        maxTetrad: 0,
+        digits: {
+            0: 0
+        },
+
+        parse: function(b) {
+            b = fixBcd(b);
+            this.min = 0;
+            var dot = b.indexOf('.');
+            if(dot > -1) this.min = dot - b.length + 1;
+            var currentIndex = this.min;
+            for(var i = b.length - 1; i >= 0; i--) {
+                if(b[i] === '.') continue;
+                this.digits[currentIndex++] = parseInt(b[i]);
+            }
+            this.max = currentIndex - 1;
+            this.updateTetradInfo();
+        },
+
+        updateTetradInfo: function() {
+            this.minTetrad = ~~(this.min / 4);
+            this.maxTetrad = ~~(this.max / 4);
+        },
+
+        // Получает число из разряда
+        get: function(index) {
+            return isDefined(this.digits[index]) ? parseInt(this.digits[index]) : 0;
+        },
+
+        // Устанавливает цифру в разряд
+        set: function(index, value) {
+            if(index === "-infinity") {
+                index = this.min - 1;
+            }
+            if(index < this.min) this.min = index;
+            if(index > this.max) this.max = index;
+            this.digits[index] = value;
+            this.updateTetradInfo();
+        },
+
+        // Удаляет цифру из разряда
+        remove: function(index) {
+            if(index >= this.min && index <= this.max) {
+                delete this.digits[index];
+            }
+            this.updateTetradInfo();
+        },
+
+        // Получает число для отображения
+        // Если число есть в разряде, то вернется это число
+        // Если индекс меньше минимального разряда, вернется 0
+        // Если больше, то вернется пустая строка
+        getView: function(index) {
+            //if(index > this.max) return '';
+            return this.get(index).toString();
+        },
+
+        getTetrad: function(index) {
+            var min = (index * 4);
+            var max = min + 3;
+            var data = "";
+            for(var i = max; i >= min; i--) {
+                data += this.getView(i);
+            }
+            return data;
+        },
+
+        getTetradDecimal: function(index) {
+            return parseInt(this.getTetrad(index), 2);
+        },
+
+        // Прибавляет к цифре в разряд
+        add: function(index, value) {
+            this.set(index, this.get(index) + value);
+        },
+
+        sub: function(index, value) {
+            this.add(index, -value);
+        },
+
+        // Возвращает число в виде строки
+        // Если первый аргумент неопределен или равен истине, то строка будет содержать разделяющую запятую.
+        toString: function() {
+            var a = '';
+            for(var i = this.max; i >= this.min; i--) {
+                if(i === -1 && (!isDefined(arguments[0]) || arguments[0])) a += '.';
+                a += getBasedNumber(this.get(i), 36);
+            }
+            return a;
+        },
+    };
+    if(isDefined(bcd)) object.parse(bcd);
+    return object;
+}
+
+// Добавляет нули в код BCD
+function fixBcd(bcd, packed)
+{
+    var bcd = bcd.toString();
+    var fromBack = bcd.indexOf('.');
+    if(fromBack > -1) {
+        fromBack = bcd.length - fromBack;
+    }
+    var bcdFixed = bcd.split('.').join('');
+    var pkd = isDefined(packed) ? packed : true;
+    while(bcdFixed.length % (bcdFixed ? 4 : 8) !== 0) {
+        bcdFixed = "0" + bcdFixed;
+    }
+    if(fromBack > 0) {
+        bcdFixed = bcdFixed.substr(0, bcdFixed.length - fromBack + 1) + '.' + bcdFixed.substr(bcdFixed.length - fromBack + 1);
+    }
+    return bcdFixed;
+}
+
+// Разбивает код BCD по тетрадам
+function splitBcdToArray(bcd, packed)
+{
+    var bcd = fixBcd(bcd);
+    var index = bcd.indexOf('.');
+    bcd = bcd.split('.').join('');
+    var a = bcd.match(/.{1,4}/g);
+    if(index > -1) {
+        a.splice(index / 4, 0, ['.']);
+    }
+    return a;
 }
 
 // Возвращает индекс дочернего элемента из его ID
