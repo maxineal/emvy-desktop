@@ -503,3 +503,9 @@ function getLastChild(parent)
     if(parent.children.length === 0) return parent;
     return parent.children[parent.children.length - 1];
 }
+
+// Возвращает логарифм x по основанию y
+function getBaseLog(x, y)
+{
+    return Math.log(y) / Math.log(x);
+}

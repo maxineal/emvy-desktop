@@ -18,6 +18,7 @@ function selectQml(layoutName)
         if(component.status === 3) console.debug("Component is not ready: (" + component.errorString() + ")");
     } else {
         object = component.createObject(main_layout);
+        root.activeLayout = layoutName.split('.')[0];
     }
     gc();
 }

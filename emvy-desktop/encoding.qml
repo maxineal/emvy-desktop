@@ -34,7 +34,7 @@ Item {
             }
             height: 80
 
-            text: "Васечкин Иван Петрович"
+            text: "Истина - дочь времени, а не авторитета"
         }
     }
 
@@ -48,35 +48,35 @@ Item {
         }
         spacing: 3
 
-            Column {
-                ExclusiveGroup {
-                    id: encoding_type
-                }
-
-                RadioButton {
-                    id: comboBox_shennon
-                    exclusiveGroup: encoding_type
-                    checked: true
-                    text: qsTr("Шеннон-Фано")
-                }
-
-                RadioButton {
-                    id: comboBox_haffman
-                    exclusiveGroup: encoding_type
-                    text: qsTr("Хаффман")
-                }
+        Column {
+            ExclusiveGroup {
+                id: encoding_type
             }
 
-            CheckBox {
-                id: checkBox_crAsSpace
-                text: qsTr("Перенос строка как пробел")
+            RadioButton {
+                id: radioButton_shennon
+                exclusiveGroup: encoding_type
+                text: qsTr("Шеннон-Фано")
             }
 
-            CheckBox {
-                id: checkBox_ignoreCase
-                text: qsTr("Без учета регистра")
+            RadioButton {
+                id: radioButton_haffman
+                exclusiveGroup: encoding_type
+                text: qsTr("Хаффман")
+                checked: true
             }
+        }
 
+        CheckBox {
+            id: checkBox_crAsSpace
+            text: qsTr("Перенос строки как пробел")
+        }
+
+        CheckBox {
+            id: checkBox_ignoreCase
+            text: qsTr("Без учета регистра")
+            checked: true
+        }
     }
 
     Button {
@@ -87,6 +87,65 @@ Item {
             top: row2.bottom
             margins: 5
         }
-        onClicked: Encoding.execute();
+        onClicked: Encoding.execute()
+    }
+
+    ScrollView {
+        id: scrollView
+        visible: false
+        anchors {
+            left: parent.left
+            right: parent.right
+            top: btn_execute.bottom
+            bottom: parent.bottom
+            margins: 5
+            topMargin: 2
+        }
+
+        ColumnLayout {
+            id: scrollArea
+            anchors.left: parent.left
+            width: children.width
+            height: children.height
+            spacing: 8
+
+            RowLayout {
+                id: outputArea
+                spacing: 8
+            }
+
+            RowLayout {
+                Text {
+                    text: qsTr("K<sub>ср</sub> = ")
+                    textFormat: Text.RichText
+                }
+
+                Text {
+                    id: k_mean
+                }
+            }
+
+            RowLayout {
+                Text {
+                    text: qsTr("I<sub>ср</sub> = ")
+                    textFormat: Text.RichText
+                }
+
+                Text {
+                    id: i_mean
+                }
+            }
+
+            RowLayout {
+                Text {
+                    text: qsTr("Q = ")
+                    textFormat: Text.RichText
+                }
+
+                Text {
+                    id: quality
+                }
+            }
+        }
     }
 }

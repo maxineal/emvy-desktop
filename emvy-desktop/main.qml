@@ -14,9 +14,11 @@ ApplicationWindow {
     minimumHeight: 200
     title: qsTr("Emvy Desktop")
 
+    property string activeLayout: ""
+
     menuBar: MenuBar {
         Menu {
-            title: qsTr("Работа")
+            title: qsTr("&Работа")
             MenuItem {
                 text: qsTr("&Системы счисления")
                 onTriggered: Main.selectQml("translateform.qml");
@@ -53,7 +55,7 @@ ApplicationWindow {
             }
         }
         Menu {
-            title: qsTr("Режим")
+            title: qsTr("Р&ежим")
             MenuItem {
                 id: mode_student
                 text: qsTr("&Студент")
@@ -68,6 +70,36 @@ ApplicationWindow {
                 onTriggered: Main.switchMode(1);
             }
         }
+
+        Menu {
+            id: main_menu_encoding_options
+            title: qsTr("&Опции")
+            visible: activeLayout === "encoding";
+
+            Menu {
+                id: main_menu_encoding_probability_type
+                title: qsTr("&Тип вероятностей")
+
+                ExclusiveGroup {
+                    id: main_menu_encoding_pt_group
+                }
+
+                MenuItem {
+                    id: main_menu_encoding_pt_decimal
+                    text: qsTr("&Десятичные")
+                    checkable: true
+                    exclusiveGroup: main_menu_encoding_pt_group
+                }
+
+                MenuItem {
+                    id: main_menu_encoding_pt_div
+                    text: qsTr("Д&роби")
+                    checkable: true
+                    checked: true
+                    exclusiveGroup: main_menu_encoding_pt_group
+                }
+            }
+        }
     }
 
     Item {
@@ -78,10 +110,6 @@ ApplicationWindow {
         Component.onCompleted: Main.selectQml("encoding.qml");
     }
 
-    /***
-      Qt Creater ругался на неправильные поля.
-      Но все работает.
-      */
     MessageDialog {
         id: messageDialogSimple
         title: qsTr("Emvy Desktop")

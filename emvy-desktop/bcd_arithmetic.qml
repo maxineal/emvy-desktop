@@ -64,8 +64,8 @@ Item {
                     left: parent.left
                     right: parent.right
                 }
-                model: ["сложение", "вычитание", "умножение"];
-                currentIndex: 1
+                model: ["сложение", "вычитание"/*, "умножение"*/];
+                //currentIndex: 1
             }
         }
 
@@ -129,7 +129,7 @@ Item {
                 id: label_text_answer
                 text: qsTr("Ответ:")
                 font.bold: false
-                visible: true
+                visible: false
                 textFormat: Text.AutoText
             }
 
@@ -137,7 +137,7 @@ Item {
                 id: label_answer
                 text: ""
                 wrapMode: Text.Wrap
-                visible: true
+                visible: false
                 textFormat: Text.RichText
             }
 

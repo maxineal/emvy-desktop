@@ -14,7 +14,6 @@
         <file>bcd_translate.js</file>
         <file>bcd_arithmetic.qml</file>
         <file>bcd_arithmetic.js</file>
-        <file>coding.qml</file>
         <file>encoding.qml</file>
         <file>encoding.js</file>
     </qresource>
@@ -22,5 +21,10 @@
         <file>NumberComponent.qml</file>
         <file>RowContainer.qml</file>
         <file>ColumnWithLine.qml</file>
+        <file>TableViewColumn.qml</file>
+        <file>Column.qml</file>
+        <file>Text.qml</file>
+        <file>HorizontalLine.qml</file>
+        <file>VerticalLine.qml</file>
     </qresource>
 </RCC>

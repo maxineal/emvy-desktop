@@ -219,7 +219,7 @@ function sub(an, bn)
 
     // вывод
     label_answer.text = Strings.printf("{0}<sub>bcd</sub> - {1}<sub>bcd</sub> = {2}<sub>bcd</sub>.",
-                                       an.toString(), bn.toString(), Tools.fixBcd(result.toString()));
+                                       acopy.toString(), bn.toString(), Tools.fixBcd(result.toString()));
 
 
     label_add_sign2.visible =
@@ -261,9 +261,9 @@ function sub(an, bn)
         }
     }
 
-    console.log(correctionIndices);
-    console.log(c.toString());
-    console.log(result.toString());
+    //console.log(correctionIndices);
+    //console.log(c.toString());
+    //console.log(result.toString());
 }
 
 // Умножение
@@ -271,4 +271,3 @@ function mul()
 {
 
 }
-
