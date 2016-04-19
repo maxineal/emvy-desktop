@@ -21,36 +21,48 @@ ApplicationWindow {
             title: qsTr("&Работа")
             MenuItem {
                 text: qsTr("&Системы счисления")
+                shortcut: "Ctrl+1"
                 onTriggered: Main.selectQml("translateform.qml");
             }
 
             MenuItem {
                 text: qsTr("&Арифметика")
+                shortcut: "Ctrl+2"
                 onTriggered: Main.selectQml("arithmetic.qml");
             }
 
+            MenuSeparator { }
+
             MenuItem {
                 text: qsTr("&Перевод BCD");
+                shortcut: "Ctrl+3"
                 onTriggered: Main.selectQml("bcd_translate.qml");
             }
 
             MenuItem {
                 text: qsTr("А&рифметические операции BCD");
+                shortcut: "Ctrl+4"
                 onTriggered: Main.selectQml("bcd_arithmetic.qml");
             }
 
+            MenuSeparator { }
+
             MenuItem {
                 text: qsTr("&Коды Хаффмана, Шеннона-Фано");
+                shortcut: "Ctrl+5"
                 onTriggered: Main.selectQml("encoding.qml");
             }
-
+/*
             MenuItem {
                 text: qsTr("&Очистка")
                 onTriggered: Main.clearLayout();
-            }
+            }*/
+
+            MenuSeparator { }
 
             MenuItem {
-                text: qsTr("Exit")
+                text: qsTr("Выход")
+                shortcut: "Alt+F4"
                 onTriggered: Qt.quit();
             }
         }
@@ -59,6 +71,7 @@ ApplicationWindow {
             MenuItem {
                 id: mode_student
                 text: qsTr("&Студент")
+                shortcut: "Ctrl+F1"
                 checkable: true
                 checked: true
                 onTriggered: Main.switchMode(0);
@@ -66,11 +79,13 @@ ApplicationWindow {
             MenuItem {
                 id: mode_teacher
                 text: qsTr("&Преподаватель")
+                shortcut: "Ctrl+F2"
                 checkable: true
                 onTriggered: Main.switchMode(1);
             }
         }
 
+        // Опции для кодирования
         Menu {
             id: main_menu_encoding_options
             title: qsTr("&Опции")
@@ -107,7 +122,7 @@ ApplicationWindow {
         anchors.fill: parent
 
         // Загрузка начального экрана
-        Component.onCompleted: Main.selectQml("encoding.qml");
+        Component.onCompleted: Main.selectQml("translateform.qml");
     }
 
     MessageDialog {

@@ -71,7 +71,7 @@ function makeTranslate()
     if($toBase !== 10) {
         var component;
         if($teacher) {
-            component = Qt.createComponent("qrc:/components/textcomponent.qml");
+            component = Qt.createComponent("qrc:/components/Text.qml");
             label_text_translateFrom10.text =
                     Strings.printf("Переводим число из десятичной в {0}-ричную систему счисления.", $toBase);
             label_text_translateFrom10_divide_int.text =

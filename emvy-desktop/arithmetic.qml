@@ -134,7 +134,7 @@ Item {
                 minimumValue: 2
                 maximumValue: 36
                 stepSize: 1
-                value: 10
+                value: 16
             }
         }
     }

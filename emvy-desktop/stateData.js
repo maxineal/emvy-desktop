@@ -1,3 +1,3 @@
 .pragma library
 
-var mode = "teacher";
+var mode = "student";
