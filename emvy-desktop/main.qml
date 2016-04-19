@@ -11,7 +11,7 @@ ApplicationWindow {
     visible: true
     width: 640
     height: 480
-    minimumWidth: 300
+    minimumWidth: 420
     minimumHeight: 200
     title: qsTr("Emvy Desktop")
 

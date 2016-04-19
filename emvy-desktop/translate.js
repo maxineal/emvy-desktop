@@ -157,7 +157,7 @@ function prepareView()
 
     // решение
     label_text_decision.visible =
-            label_final_answer.visible = true;
+            label_final_answer.visible = $teacher;
 
     // перевод в десятичную СС
     label_text_translateTo10.visible =
