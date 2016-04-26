@@ -54,4 +54,10 @@ function msgBox(text, data)
     gc();
 }
 
+function requireTeacherMode()
+{
+    if(State.teacherModeAvailable) switchMode(1);
+    else passwordDialog.open();
+}
+
 

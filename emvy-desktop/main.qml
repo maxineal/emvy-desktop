@@ -4,6 +4,7 @@ import QtQuick.Layouts 1.1
 import QtQuick.Dialogs 1.2
 
 import "main.js" as Main
+import "stateData.js" as State
 
 ApplicationWindow {
     id: root
@@ -81,7 +82,8 @@ ApplicationWindow {
                 text: qsTr("&Преподаватель")
                 shortcut: "Ctrl+F2"
                 checkable: true
-                onTriggered: Main.switchMode(1);
+                //onTriggered: Main.switchMode(1);
+                onTriggered: Main.requireTeacherMode();
             }
         }
 
@@ -133,6 +135,54 @@ ApplicationWindow {
     MessageDialog {
         id: messageDialogDetailed
         title: qsTr("Emvy Desktop")
+    }
+
+    Dialog {
+        id: passwordDialog
+        visible: false
+        title: qsTr("Режим преподавателя");
+        standardButtons: StandardButton.Ok | StandardButton.Cancel
+        onRejected: {
+            Main.switchMode(0);
+            passwordField.text = "";
+        }
+        onAccepted: {
+            if(passwordField.text === "123pda")
+            {
+                State.teacherModeAvailable = true;
+                Main.switchMode(1);
+            }
+            else
+            {
+                Main.switchMode(0);
+                passwordDialog.open();
+            }
+            passwordField.text = "";
+        }
+
+        ColumnLayout
+        {
+            anchors {
+                left: parent.left
+                right: parent.right
+            }
+
+            Label
+            {
+                text: qsTr("Пароль:");
+            }
+
+            TextField
+            {
+                id: passwordField
+                echoMode: TextInput.Password
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                }
+
+            }
+        }
     }
 }
 
