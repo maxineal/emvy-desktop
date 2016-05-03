@@ -146,6 +146,10 @@ Item {
                     id: quality
                 }
             }
+
+            RowLayout {
+
+            }
         }
     }
 }
