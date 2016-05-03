@@ -308,6 +308,9 @@ function fillProbabilityArray()
 
     // Сортировка по убыванию
     probability.sort(function(a, b) {
+        if(a.probability === b.probability) {
+            return a.symbol.charCodeAt(0) < b.symbol.charCodeAt(0) ? -1 : 1;
+        }
         return a.probability > b.probability ? -1 : 1;
     });
     return probability;
