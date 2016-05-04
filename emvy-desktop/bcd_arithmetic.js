@@ -93,7 +93,7 @@ function add(an, bn)
         c.add(i, an.get(i) + bn.get(i));
         if(c.get(i) >= 2) {
             if((i + 1) % 4 === 0) {
-                correctionIndices.push(~~(i / 4));
+                correctionIndices.push(Math.floor(i / 4));
             }
             c.set(i + 1, 1);
             c.sub(i, 2);
@@ -183,12 +183,12 @@ function sub(an, bn)
         a = an.get(i);
         b = bn.get(i);
         if(a < b) {
-            tetradIndex = ~~(i / 4);
+            tetradIndex = Math.floor(i / 4);
             for(var j = i + 1; j <= max; j++) {
                 if(an.get(j) !== 0)
                 {
                     // межтетрадный перенос
-                    if(~~(j / 4) !== tetradIndex) {
+                    if(Math.floor(j / 4) !== tetradIndex) {
                         correctionIndices.push(tetradIndex);
                     }
                     an.sub(j, 1);
@@ -249,8 +249,8 @@ function sub(an, bn)
                 textComponent.createObject(row_add_result).text = txt;
             }
 
-            tetradIndex = ~~(i / 4);
-            tetradDiv = i - (~~(i / 4));
+            tetradIndex = Math.floor(i / 4);
+            tetradDiv = i - (Math.floor(i / 4));
 
             textComponent.createObject(row_add_number1).text = acopy.getView(i);
             textComponent.createObject(row_add_number2).text = bn.getView(i);

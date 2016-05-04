@@ -278,7 +278,7 @@ function multiply(an, bn, base1, base2)
 
             el[ind1].add(ind1 + ind2, a * b);
             if(el[ind1].get(ind1 + ind2) >= base1) {
-                el[ind1].set(ind1 + ind2 + 1, ~~(el[ind1].get(ind1 + ind2) / base1));
+                el[ind1].set(ind1 + ind2 + 1, Math.floor(el[ind1].get(ind1 + ind2) / base1));
                 el[ind1].set(ind1 + ind2, el[ind1].get(ind1 + ind2) % base1);
             }
 
@@ -295,7 +295,7 @@ function multiply(an, bn, base1, base2)
             result.add(i, el[j].get(i));
         }
         if(result.get(i) >= base1) {
-            result.set(i + 1, ~~(result.get(i) / base1));
+            result.set(i + 1, Math.floor(result.get(i) / base1));
             result.set(i, result.get(i) % base1);
         }
     }

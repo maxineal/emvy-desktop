@@ -3,6 +3,7 @@
 .import "stateData.js" as State
 .import "strings.js" as Strings
 .import "tools.js" as Tools
+.import Emvy 1.0 as Emvy
 
 function translate()
 {
@@ -79,7 +80,7 @@ function makeTranslate()
         }
 
 
-        var digitPart = ~~($result);
+        var digitPart = Math.floor($result);
         var destBaseResult = '', basedNumber = '';
         while(digitPart > 0) {
             basedNumber = Tools.getBasedNumber(digitPart % $toBase, $toBase);
@@ -94,7 +95,7 @@ function makeTranslate()
                 }
                 object.font.bold = true;
             }
-            digitPart = ~~(digitPart / $toBase);
+            digitPart = Math.floor(digitPart / $toBase);
         }
 
         // переворачиваем число
@@ -102,7 +103,7 @@ function makeTranslate()
         if($teacher) {
             label_translateFrom10_divide_int_result.text =
                     Strings.printf("Записываем с нижнего числа:<br>{0}<sub>10</sub>&nbsp;=&nbsp;{1}<sub>{2}</sub>",
-                                   ~~($result), destBaseResult, $toBase);
+                                   Math.floor($result), destBaseResult, $toBase);
         }
 
         // дробная часть
@@ -114,7 +115,7 @@ function makeTranslate()
             }
 
             destBaseResult += '.';
-            var fraction = $result - (~~$result);
+            var fraction = $result - Math.floor($result);
             var partedFraction = 0;
             for(var i = 0; i < $accuracy; i++)
             {
@@ -123,7 +124,7 @@ function makeTranslate()
                     component.createObject(list_translateFrom10_decimal).text = " * " + $toBase + " ";
                 }
 
-                fraction *= $toBase; partedFraction = ~~fraction;
+                fraction *= $toBase; partedFraction = Math.floor(fraction);
                 destBaseResult += Tools.getBasedNumber(partedFraction, $toBase);
                 fraction = fraction - partedFraction;
 
@@ -139,6 +140,7 @@ function makeTranslate()
         $result = $result.toFixed($accuracy);
     }
 
+    State.lastAnswer = $result;
     label_answer.text =
             Strings.printf("{0}<sub>{1}</sub> = {2}<sub>{3}</sub>.",
                            $n, $fromBase, $result, $toBase);
