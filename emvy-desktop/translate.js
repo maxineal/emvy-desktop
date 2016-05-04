@@ -3,7 +3,6 @@
 .import "stateData.js" as State
 .import "strings.js" as Strings
 .import "tools.js" as Tools
-.import Emvy 1.0 as Emvy
 
 function translate()
 {
