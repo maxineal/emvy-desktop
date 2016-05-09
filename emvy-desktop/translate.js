@@ -139,7 +139,6 @@ function makeTranslate()
         $result = $result.toFixed($accuracy);
     }
 
-    State.lastAnswer = $result;
     label_answer.text =
             Strings.printf("{0}<sub>{1}</sub> = {2}<sub>{3}</sub>.",
                            $n, $fromBase, $result, $toBase);
