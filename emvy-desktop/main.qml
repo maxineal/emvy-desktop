@@ -5,6 +5,7 @@ import QtQuick.Dialogs 1.2
 
 import "main.js" as Main
 import "stateData.js" as State
+import "tools.js" as Tools
 
 ApplicationWindow {
     id: root
@@ -124,7 +125,11 @@ ApplicationWindow {
         anchors.fill: parent
 
         // Загрузка начального экрана
-        Component.onCompleted: Main.selectQml("translateform.qml");
+        Component.onCompleted: {
+            var n = Tools.initDecimalNumber();
+            n.number = "4545,56";
+            Main.selectQml("translateform.qml");
+        }
     }
 
     MessageDialog {

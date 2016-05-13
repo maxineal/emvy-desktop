@@ -510,3 +510,13 @@ function getBaseLog(x, y)
 {
     return Math.log(y) / Math.log(x);
 }
+
+// Возвращает экземпляр класса DecimalNumber
+function initDecimalNumber(n)
+{
+    var obj = Qt.createQmlObject("import Emvy 1.0; DecimalNumber { }", root, "decimalNumberObject");
+    if(isDefined(n)) {
+        obj.number = n;
+    }
+    return obj;
+}
