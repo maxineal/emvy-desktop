@@ -205,6 +205,7 @@ function initSplitNumber(n, base)
         // Парсит число
         parse: function(num) {
             n = num.toString();
+            n = n.split(',').join('.');
             var currentDigit = 0;
             var dot = n.toString().indexOf('.');
             if(dot > -1) {
