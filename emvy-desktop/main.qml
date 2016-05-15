@@ -125,14 +125,7 @@ ApplicationWindow {
         anchors.fill: parent
 
         // Загрузка начального экрана
-        Component.onCompleted: {
-            console.time("e");
-            var n = Tools.initDecimalNumber(415.5);
-            n.pow(4);
-            console.timeEnd("e");
-            console.log(n.number);
-            Main.selectQml("translateform.qml");
-        }
+        Component.onCompleted: Main.selectQml("translateform.qml");
     }
 
     MessageDialog {

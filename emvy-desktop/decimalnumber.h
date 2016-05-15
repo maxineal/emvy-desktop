@@ -55,6 +55,9 @@ public:
     Q_INVOKABLE int compare(QString n);
     Q_INVOKABLE int compare(int n);
 
+    Q_INVOKABLE void floor();
+    Q_INVOKABLE void toFixed(uint n);
+
     int length();
     void push(int x);
     int pop();

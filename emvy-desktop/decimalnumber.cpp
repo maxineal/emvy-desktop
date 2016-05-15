@@ -486,3 +486,25 @@ OVERLOAD_TFUNCTION(int, compare)
     }
     return 0;
 }
+
+// ----------------------------------------------------------
+// Округление
+void DecimalNumber::floor()
+{
+    while(this->min < 0)
+    {
+        this->digits.erase(this->min);
+        this->min++;
+    }
+}
+
+void DecimalNumber::toFixed(uint n)
+{
+    int a = -n;
+    if(this->min < a) this->digits[a] += (this->digits[a-1] >= 5 ? 1 : 0);
+    while(this->min < a)
+    {
+        this->digits.erase(this->min);
+        this->min++;
+    }
+}
