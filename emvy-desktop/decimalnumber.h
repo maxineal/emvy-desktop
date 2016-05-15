@@ -10,8 +10,10 @@
     type DecimalNumber::func(int n) { return this->func(QString::number(n)); } \
     type DecimalNumber::func(DecimalNumber *n)
 
+#define ACCURACY 15
+
 #include <map>
-#include <math.h>
+#include <vector>
 #include <QObject>
 #include <QDebug>
 
@@ -24,6 +26,7 @@ class DecimalNumber : public QObject
 
 public:
     explicit DecimalNumber(QObject *parent = 0);
+    explicit DecimalNumber(DecimalNumber *obj);
 
     QString getNumber();
     void setNumber(QString s);
@@ -43,6 +46,10 @@ public:
     Q_INVOKABLE void div(DecimalNumber *n);
     Q_INVOKABLE void div(QString n);
     Q_INVOKABLE void div(int n);
+
+    Q_INVOKABLE void pow(DecimalNumber *n);
+    Q_INVOKABLE void pow(QString n);
+    Q_INVOKABLE void pow(int n);
 
     Q_INVOKABLE int compare(DecimalNumber *n);
     Q_INVOKABLE int compare(QString n);

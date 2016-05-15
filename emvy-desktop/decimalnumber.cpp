@@ -11,6 +11,12 @@ DecimalNumber::DecimalNumber(QObject *parent) : QObject(parent)
     this->digits.insert(PAIR(0, 0));
 }
 
+DecimalNumber::DecimalNumber(DecimalNumber *obj) : QObject(NULL)
+{
+    this->Clear();
+    this->Copy(obj);
+}
+
 // Очистка данных
 void DecimalNumber::Clear()
 {
@@ -85,6 +91,12 @@ void DecimalNumber::Normalize()
         this->digits.erase(this->min);
         this->min++;
     }
+
+    // Если ноль, сделать положительным числом
+    if(this->digits.size() == 1 && !this->sign)
+    {
+        if(this->digits[0] == 0) this->sign = true;
+    }
 }
 
 void DecimalNumber::DotMove(int offset)
@@ -143,7 +155,7 @@ int DecimalNumber::shift()
 // Возвращает число в виде строки
 QString DecimalNumber::getNumber()
 {
-    QString s = "";
+    QString s = this->sign ? "" : "-";
     int max = std::max(this->max, 0);
     for(int i = max; i >= this->min; i--)
     {
@@ -160,7 +172,7 @@ void DecimalNumber::setNumber(QString s)
     this->ValidateNumber(s);
     if(s.length() > 1 && s.mid(0, 1) == "-")
     {
-        s = s.mid(1, s.length() - 1);
+        s = s.mid(1);
         this->sign = false;
     }
     int dot = s.indexOf('.');
@@ -180,6 +192,28 @@ void DecimalNumber::setNumber(QString s)
 // Сложение
 OVERLOAD_FUNCTION(add)
 {
+    DecimalNumber *a = new DecimalNumber(this);
+    DecimalNumber *b = new DecimalNumber(n);
+
+    if(a->sign ^ b->sign)
+    {
+        if(!a->sign)
+        {
+            a->sign = true;
+            b->sub(a);
+            this->Copy(b);
+        }
+        else
+        {
+            b->sign = true;
+            a->sub(b);
+            this->Copy(a);
+        }
+        delete a;
+        delete b;
+        return;
+    }
+
     int min = std::min(this->min, n->min);
     int max = std::max(this->max, n->max);
     for(int i = min; i <= max; i++)
@@ -193,32 +227,74 @@ OVERLOAD_FUNCTION(add)
         }
     }
     this->Normalize();
+    delete a;
+    delete b;
 }
 
 // ------------------------------------------------------
 // Вычитание
 OVERLOAD_FUNCTION(sub)
 {
-    int min = std::min(this->min, n->min);
-    int max = std::max(this->max, n->max);
+    DecimalNumber *a = new DecimalNumber(this);
+    DecimalNumber *b = new DecimalNumber(n);
+    if(!a->sign && !b->sign)
+    {
+        b->sign = true;
+        a->add(b);
+        a->sign = b->sign = false;
+        this->Copy(a);
+    }
+    else if(!a->sign && b->sign)
+    {
+        a->sign = true;
+        a->add(b);
+        a->sign = false;
+        this->Copy(a);
+    }
+    else if(a->sign && !b->sign)
+    {
+        b->sign = true;
+        a->add(b);
+        b->sign = false;
+        this->Copy(a);
+    }
+    if(!(a->sign && b->sign))
+    {
+        delete a; delete b;
+        return;
+    }
+
+    bool reverseSign = false;
+    if(a->compare(b) == -1)
+    {
+        std::swap(a, b);
+        reverseSign = true;
+    }
+
+    int min = std::min(a->min, b->min);
+    int max = std::max(a->max, b->max);
     for(int i = min; i <= max; i++)
     {
-        if(this->GetDigit(i) < n->GetDigit(i))
+        if(a->GetDigit(i) < b->GetDigit(i))
         {
             for(int j = i + 1; j <= max; j++)
             {
-                if(this->GetDigit(j) > 0)
+                if(a->GetDigit(j) > 0)
                 {
-                    this->SubDigit(j, 1);
-                    this->AddDigit(i, 10);
-                    for(int k = j - 1; k > i; k--) this->SetDigit(k, 9);
+                    a->SubDigit(j, 1);
+                    a->AddDigit(i, 10);
+                    for(int k = j - 1; k > i; k--) a->SetDigit(k, 9);
                     break;
                 }
             }
         }
-        this->SubDigit(i, n->GetDigit(i));
+        a->SubDigit(i, b->GetDigit(i));
     }
+    this->Copy(a);
     this->Normalize();
+    if(reverseSign) this->sign = !this->sign;
+    delete a;
+    delete b;
 }
 
 // ------------------------------------------------------
@@ -248,6 +324,7 @@ OVERLOAD_FUNCTION(mul)
     }
     if(this->min < 0 || n->min < 0) result->DotMove(this->min + n->min);
     result->Normalize();
+    result->sign = !(this->sign ^ n->sign);
     this->Copy(result);
     delete result;
 }
@@ -256,28 +333,47 @@ OVERLOAD_FUNCTION(mul)
 // Деление
 OVERLOAD_FUNCTION(div)
 {
+    DecimalNumber *divider = new DecimalNumber();
     DecimalNumber *divided = new DecimalNumber();
     DecimalNumber *mul = new DecimalNumber();
     QString result = "", dived = "";
     int accuracy = 0;
 
+    QString num = n->getNumber();
+    num.replace('.', "").replace('-', "");
+    divider->setNumber(num);
     divided->number = "0";
-    for(int i = this->max; i >= this->min && divided->number.length() - 1 < n->length(); i++)
-        divided->number += QString::number(this->shift());
 
-    while((this->length() > 0))
+    vector<QString> mainDiv;
+    for(int i = this->min; i <= this->max; i++) mainDiv.push_back(QString::number(this->GetDigit(i)));
+
+    while(!mainDiv.empty() || (divided->number != "0" && accuracy < ACCURACY))
     {
         divided->ApplyNumber();
-        if(divided->compare(n) == -1)
+        if(divided->compare(divider) == -1)
         {
             result += "0";
-            divided->number += QString::number(this->shift());
+            if(!mainDiv.empty())
+            {
+                divided->number += mainDiv.back();
+                mainDiv.pop_back();
+            }
+            else
+            {
+                divided->number += "0";
+                if(mainDiv.size() == 0)
+                {
+                    if(accuracy == 0) result += ".";
+                    accuracy++;
+                }
+            }
             continue;
         }
 
+        // Подбор множителя
         for(int i = 10; i > 0; i--)
         {
-            mul->Copy(n);
+            mul->Copy(divider);
             mul->mul(i);
             if(mul->compare(divided) <= 0)
             {
@@ -288,7 +384,72 @@ OVERLOAD_FUNCTION(div)
             }
         }
 
-        divided->number += QString::number(this->shift());
+        // Следующая цифра
+        if(!mainDiv.empty())
+        {
+            divided->number += mainDiv.back();
+            mainDiv.pop_back();
+        }
+        else
+        {
+            divided->number += "0";
+            if(mainDiv.size() == 0)
+            {
+                if(accuracy == 0) result += ".";
+                accuracy++;
+            }
+        }
+
+        if(mainDiv.empty() && divided->number.toULongLong() == 0)
+        {
+            result += "0";
+            break;
+        }
+    }
+
+    int offsetDot = 0;
+    QString buffer = this->getNumber();
+    if(buffer.indexOf('.') > -1) offsetDot -= buffer.length() - buffer.indexOf('.') - 1;
+    buffer = n->getNumber();
+    if(buffer.indexOf('.') > -1) offsetDot += buffer.length() - buffer.indexOf('.') - 1;
+    if(offsetDot != 0)
+    {
+        int newPos = result.indexOf('.') + offsetDot;
+        result.replace('.', "");
+        result = result.mid(0, newPos) + "." + result.mid(newPos);
+    }
+    if(result.length() > 0 && result.mid(result.length() - 1, 1) == ".") result = result.mid(0, result.length() - 1);
+    bool sign = this->sign;
+    this->setNumber(result);
+    this->sign = !(sign ^ n->sign);
+    delete divider;
+    delete divided;
+    delete mul;
+}
+
+// ----------------------------------------------------------
+// Возведение в степень
+OVERLOAD_FUNCTION(pow)
+{
+    if(n->compare(0) == 0)
+    {
+        this->setNumber("1");
+        return;
+    }
+    else if(n->compare(1) == 0) return;
+    int step = n->compare(0);
+    DecimalNumber *m = new DecimalNumber(this);
+    n->sub(step);
+    while(n->compare(0) != 0)
+    {
+        this->mul(m);
+        n->sub(step);
+    }
+    if(!n->sign)
+    {
+        m->setNumber("1");
+        m->div(this);
+        this->Copy(m);
     }
 }
 
@@ -296,6 +457,12 @@ OVERLOAD_FUNCTION(div)
 // Сравнение
 OVERLOAD_TFUNCTION(int, compare)
 {
+    // Сравнение с нулем
+    if(this->digits.size() == 1 && n->digits.size() == 1)
+    {
+        if(this->digits[0] == n->digits[0] && this->digits[0] == 0) return 0;
+    }
+
     if(this->sign ^ n->sign) return this->sign ? 1 : -1;
     int a, b;
     if(this->max != n->max) return this->max > n->max ? 1 : -1;

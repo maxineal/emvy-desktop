@@ -126,9 +126,10 @@ ApplicationWindow {
 
         // Загрузка начального экрана
         Component.onCompleted: {
-            var n = Tools.initDecimalNumber("12546,246");
-            var m = Tools.initDecimalNumber("3");
-            n.div(m.number);
+            console.time("e");
+            var n = Tools.initDecimalNumber(415.5);
+            n.pow(4);
+            console.timeEnd("e");
             console.log(n.number);
             Main.selectQml("translateform.qml");
         }
