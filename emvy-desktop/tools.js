@@ -16,20 +16,19 @@ function getNumber(n, base)
     return a;
 }
 
-
 function getBasedNumber(n, base)
 {
     var a = parseInt(n).toString(isDefined(base) ? base : 36);
-    if(a == "NaN") return 0;
+    if(a === "NaN") return 0;
     return a;
 }
-
 
 function toDecimal(n, base, accuracy)
 {
     if(base === 10) return n;
-    var result = 0;
+    var result = initDecimalNumber(0);
     var currentN = 0;
+    var tmp = initDecimalNumber(0);
 
     n = n.toString();
     var dotPos = n.indexOf('.');
@@ -37,15 +36,18 @@ function toDecimal(n, base, accuracy)
     for(var i = n.length - 1; i >= 0; i--) {
         if(i === dotPos) continue;
         var currentNumber = Tools.getNumber(n.substr(i, 1));
-        result += currentNumber * Math.pow(base, currentN);
+        tmp.number = base;
+        tmp.pow(currentN);
+        tmp.mul(currentNumber);
+        result.add(tmp.number);
         currentN++;
     }
     if(isDefined(accuracy)) {
-        if(result.toString().indexOf('.') > -1) {
-            result = result.toFixed(accuracy);
-        }
+        result.toFixed(accuracy);
     }
-    return parseFloat(result);
+    var answer = result.number;
+    deleteObjects(result, tmp);
+    return result.number;
 }
 
 function fromDecimal(n, base, accuracy)
@@ -57,17 +59,22 @@ function fromDecimal(n, base, accuracy)
         return n;
     }
     var acc = isDefined(accuracy) ? accuracy : 5;
-    var intPart = (~~n);
-    var destBaseResult = "";
-    var basedNumber = "";
-    if(intPart == 0) {
+    var tmp = initDecimalNumber(n);
+    var intPart = initDecimalNumber(n);
+    intPart.floor();
+
+    var destBaseResult = "", basedNumber = "";
+    if(intPart.compare(0) === 0) {
         destBaseResult = "0";
     }
     else {
-        while(intPart > 0) {
-            basedNumber = Tools.getBasedNumber(intPart % base, base);
+        while(intPart.compare(0) > 0) {
+            tmp.number = intPart.number;
+            tmp.mod(base);
+            basedNumber = Tools.getBasedNumber(tmp.number, base);
             destBaseResult += basedNumber;
-            intPart = ~~(intPart / base);
+            intPart.div(base);
+            intPart.floor();
         }
     }
 
@@ -77,21 +84,20 @@ function fromDecimal(n, base, accuracy)
     // дробная часть
     if(n.toString().indexOf('.') > -1) {
         destBaseResult += ".";
-        var fraction = n - (~~n);
-        var partedFraction = 0;
+        intPart.number = n;
+        intPart.shiftInt();
+        tmp.number = 0;
         for(var i = 0; i < acc; i++)
         {
-            fraction *= base;
-            partedFraction = ~~fraction;
-            destBaseResult += Tools.getBasedNumber(partedFraction, base);
-            fraction = fraction - partedFraction;
+            intPart.mul(base);
+            tmp.number = intPart.number;
+            tmp.floor();
+            destBaseResult += Tools.getBasedNumber(tmp.number, base);
+            intPart.shiftInt();
         }
     }
-    /*
-    while(destBaseResult.length > 1 && destBaseResult.substr(destBaseResult.length - 1, 1) === '0') {
-        destBaseResult = destBaseResult.substr(0, destBaseResult.length - 1);
-    }*/
     return destBaseResult;
+    deleteObjects(intPart, tmp);
 }
 
 function isNumber(n, base, options)

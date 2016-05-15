@@ -314,6 +314,7 @@ function multiply(an, bn, base1, base2)
                            num1.text, base1,
                            num2.text, base2,
                            (inverseSign ? '-' : ''), strResult.toString());
+    // Ответ в десятичной системе
     if(base1 !== 10) {
         var resultInDecimalBase = Tools.toDecimal(strResult, base1, 5);
         label_answer.text +=
