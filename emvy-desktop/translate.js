@@ -6,11 +6,13 @@
 
 function translate()
 {
+    console.time("translate");
     if(!validateForm()) return false;
     clearField();
     makeTranslate();
     prepareView();
     gc();
+    console.timeEnd("translate");
     return true;
 }
 
@@ -37,8 +39,10 @@ function makeTranslate()
     var $fromBase = fromBase.value;
     var $toBase = toBase.value;
     var $accuracy = accuracy.value;
-    var $result = 0
+    var $result = Tools.initDecimalNumber(0);
+    var tmp = Tools.initDecimalNumber(0);
     var $teacher = State.mode !== 'student';
+    var $answer = "";
 
     // перевод в десятичную СС
     if($fromBase !== 10) {
@@ -56,15 +60,18 @@ function makeTranslate()
                 if(i !== $sn.max) label_translateTo10.text += ' + ';
             }
 
-            $result += $sn.get(i) * Math.pow($fromBase, i);
+            tmp.number = $fromBase;
+            tmp.pow(i);
+            tmp.mul($sn.get(i));
+            $result.add(tmp.number);
         }
 
         if($teacher) {
-            label_translateTo10.text += Strings.printf(" = {0}<sub>10</sub>.", $result);
+            label_translateTo10.text += Strings.printf(" = {0}<sub>10</sub>.", $result.number);
         }
     }
     else {
-        $result = parseFloat($n);
+        $result.number = $n;
     }
 
     // перевод из десятичной СС
@@ -78,32 +85,38 @@ function makeTranslate()
                     Strings.printf("Делим целую часть числа на {0}, сохраняя остатки:", $toBase);
         }
 
-
-        var digitPart = Math.floor($result);
+        var digitPart = Tools.initDecimalNumber($result.number);
+        digitPart.floor();
         var destBaseResult = '', basedNumber = '';
-        while(digitPart > 0) {
-            basedNumber = Tools.getBasedNumber(digitPart % $toBase, $toBase);
+        while(digitPart.compare(0) !== 0) {
+            tmp.number = digitPart.number;
+            tmp.mod($toBase);
+            basedNumber = Tools.getBasedNumber(tmp.number, $toBase);
             destBaseResult += basedNumber;
 
             if($teacher) {
                 var object = component.createObject(grid_translateFrom10_divide_int);
-                object.text = digitPart;
-                if(digitPart >= $toBase) {
+                object.text = digitPart.number;
+                if(digitPart.compare($toBase) >= 0) {
                     object = component.createObject(grid_translateFrom10_divide_int);
                     object.text = basedNumber;
                 }
                 object.font.bold = true;
             }
-            digitPart = Math.floor(digitPart / $toBase);
+            digitPart.div($toBase);
+            digitPart.floor();
         }
 
         // переворачиваем число
         destBaseResult = destBaseResult.split('').reverse().join('');
         if($teacher) {
+            digitPart.number = $result.number;
+            digitPart.floor();
             label_translateFrom10_divide_int_result.text =
                     Strings.printf("Записываем с нижнего числа:<br>{0}<sub>10</sub>&nbsp;=&nbsp;{1}<sub>{2}</sub>",
-                                   Math.floor($result), destBaseResult, $toBase);
+                                   digitPart.number, destBaseResult, $toBase);
         }
+        delete digitPart;
 
         // дробная часть
         if($n.toString().indexOf('.') > -1) {
@@ -114,37 +127,45 @@ function makeTranslate()
             }
 
             destBaseResult += '.';
-            var fraction = $result - Math.floor($result);
-            var partedFraction = 0;
+            var fraction = Tools.initDecimalNumber($result);
+            fraction.shiftInt();
+            var partedFraction = Tools.initDecimalNumber(0);
+            // ---
             for(var i = 0; i < $accuracy; i++)
             {
                 if($teacher) {
-                    component.createObject(list_translateFrom10_decimal).text = fraction;
+                    component.createObject(list_translateFrom10_decimal).text = fraction.number;
                     component.createObject(list_translateFrom10_decimal).text = " * " + $toBase + " ";
                 }
 
-                fraction *= $toBase; partedFraction = Math.floor(fraction);
-                destBaseResult += Tools.getBasedNumber(partedFraction, $toBase);
-                fraction = fraction - partedFraction;
+                fraction.mul($toBase);
+                partedFraction.number = fraction.number;
+                partedFraction.floor();
+                destBaseResult += Tools.getBasedNumber(partedFraction.number, $toBase);
+                fraction.shiftInt();
 
                 if($teacher) {
                     component.createObject(list_translateFrom10_decimal).text =
-                            "= <b>" + partedFraction + "</b>" + fraction.toString().substr(1);
+                            "= <b>" + partedFraction.number + "</b>" + fraction.number.substr(1);
                 }
             }
+            Tools.deleteObjects(fraction, partedFraction);
         }
-        $result = destBaseResult;
+        $answer = destBaseResult;
     }
     else {
-        $result = $result.toFixed($accuracy);
+        $result.toFixed($accuracy);
+        $answer = $result.number;
     }
 
     label_answer.text =
             Strings.printf("{0}<sub>{1}</sub> = {2}<sub>{3}</sub>.",
-                           $n, $fromBase, $result, $toBase);
+                           $n, $fromBase, $answer, $toBase);
     if($teacher) {
-        label_final_answer.text = Strings.printf("Ответ: {0}<sub>{1}</sub>.", $result, $toBase);
+        label_final_answer.text = Strings.printf("Ответ: {0}<sub>{1}</sub>.", $answer, $toBase);
     }
+
+    delete tmp;
 }
 
 // Обработка вида

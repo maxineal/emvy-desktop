@@ -47,6 +47,10 @@ public:
     Q_INVOKABLE void div(QString n);
     Q_INVOKABLE void div(int n);
 
+    Q_INVOKABLE void mod(DecimalNumber *n);
+    Q_INVOKABLE void mod(QString n);
+    Q_INVOKABLE void mod(int n);
+
     Q_INVOKABLE void pow(DecimalNumber *n);
     Q_INVOKABLE void pow(QString n);
     Q_INVOKABLE void pow(int n);
@@ -57,6 +61,9 @@ public:
 
     Q_INVOKABLE void floor();
     Q_INVOKABLE void toFixed(uint n);
+    Q_INVOKABLE void shiftInt();
+
+    Q_INVOKABLE QString toString();
 
     int length();
     void push(int x);

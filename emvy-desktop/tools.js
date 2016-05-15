@@ -515,8 +515,14 @@ function getBaseLog(x, y)
 function initDecimalNumber(n)
 {
     var obj = Qt.createQmlObject("import Emvy 1.0; DecimalNumber { }", root, "decimalNumberObject");
+    obj.objectName = "DecimalNumber";
     if(isDefined(n)) {
-        obj.number = n;
+        if(typeof n === "object" && n.objectName === "DecimalNumber") {
+            obj.number = n.number;
+        }
+        else {
+            obj.number = n;
+        }
     }
     return obj;
 }

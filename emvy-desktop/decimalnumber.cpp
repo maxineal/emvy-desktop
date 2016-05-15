@@ -361,11 +361,8 @@ OVERLOAD_FUNCTION(div)
             else
             {
                 divided->number += "0";
-                if(mainDiv.size() == 0)
-                {
-                    if(accuracy == 0) result += ".";
-                    accuracy++;
-                }
+                if(accuracy == 0) result += ".";
+                accuracy++;
             }
             continue;
         }
@@ -393,11 +390,8 @@ OVERLOAD_FUNCTION(div)
         else
         {
             divided->number += "0";
-            if(mainDiv.size() == 0)
-            {
-                if(accuracy == 0) result += ".";
-                accuracy++;
-            }
+            if(accuracy == 0) result += ".";
+            accuracy++;
         }
 
         if(mainDiv.empty() && divided->number.toULongLong() == 0)
@@ -422,6 +416,74 @@ OVERLOAD_FUNCTION(div)
     bool sign = this->sign;
     this->setNumber(result);
     this->sign = !(sign ^ n->sign);
+    delete divider;
+    delete divided;
+    delete mul;
+}
+
+// ----------------------------------------------------------
+// Деление с остатком
+OVERLOAD_FUNCTION(mod)
+{
+    DecimalNumber *divider = new DecimalNumber();
+    DecimalNumber *divided = new DecimalNumber();
+    DecimalNumber *mul = new DecimalNumber();
+    int accuracy = 0;
+
+    QString num = n->getNumber();
+    num.replace('.', "").replace('-', "");
+    divider->setNumber(num);
+    divided->number = "0";
+
+    vector<QString> mainDiv;
+    for(int i = this->min; i <= this->max; i++) mainDiv.push_back(QString::number(this->GetDigit(i)));
+
+    while(!mainDiv.empty() || (divided->number != "0" && accuracy < ACCURACY))
+    {
+        divided->ApplyNumber();
+        if(divided->compare(divider) == -1)
+        {
+            if(!mainDiv.empty())
+            {
+                divided->number += mainDiv.back();
+                mainDiv.pop_back();
+            }
+            else
+            {
+                this->setNumber(divided->number);
+                return;
+            }
+            continue;
+        }
+
+        // Подбор множителя
+        for(int i = 10; i > 0; i--)
+        {
+            mul->Copy(divider);
+            mul->mul(i);
+            if(mul->compare(divided) <= 0)
+            {
+                divided->sub(mul);
+                divided->number = divided->getNumber();
+                break;
+            }
+        }
+
+        // Следующая цифра
+        if(!mainDiv.empty())
+        {
+            divided->number += mainDiv.back();
+            mainDiv.pop_back();
+        }
+        else
+        {
+            this->setNumber(divided->number);
+            return;
+        }
+        if(mainDiv.empty() && divided->number.toULongLong() == 0) break;
+    }
+
+    this->Normalize();
     delete divider;
     delete divided;
     delete mul;
@@ -507,4 +569,20 @@ void DecimalNumber::toFixed(uint n)
         this->digits.erase(this->min);
         this->min++;
     }
+}
+
+// Отбрасывает целую часть
+void DecimalNumber::shiftInt()
+{
+    while(this->max > 0)
+    {
+        this->digits.erase(this->max);
+        this->max--;
+    }
+    this->digits[0] = 0;
+}
+
+QString DecimalNumber::toString()
+{
+    return this->getNumber();
 }
