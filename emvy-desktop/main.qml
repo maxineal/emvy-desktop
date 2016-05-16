@@ -125,7 +125,7 @@ ApplicationWindow {
         anchors.fill: parent
 
         // Загрузка начального экрана
-        Component.onCompleted: Main.selectQml("translateform.qml");
+        Component.onCompleted: Main.selectQml("arithmetic.qml");
     }
 
     MessageDialog {
