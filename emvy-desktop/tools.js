@@ -47,7 +47,7 @@ function toDecimal(n, base, accuracy)
     }
     var answer = result.number;
     deleteObjects(result, tmp);
-    return result.number;
+    return parseFloat(result.number);
 }
 
 function fromDecimal(n, base, accuracy)
@@ -59,8 +59,8 @@ function fromDecimal(n, base, accuracy)
         return n;
     }
     var acc = isDefined(accuracy) ? accuracy : 5;
-    var tmp = initDecimalNumber(n);
     var intPart = initDecimalNumber(n);
+    var tmp = initDecimalNumber(0);
     intPart.floor();
 
     var destBaseResult = "", basedNumber = "";
@@ -96,8 +96,8 @@ function fromDecimal(n, base, accuracy)
             intPart.shiftInt();
         }
     }
-    return destBaseResult;
     deleteObjects(intPart, tmp);
+    return destBaseResult;
 }
 
 function isNumber(n, base, options)

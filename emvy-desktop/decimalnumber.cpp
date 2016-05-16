@@ -28,6 +28,11 @@ void DecimalNumber::Clear()
 // Проверяет число
 bool DecimalNumber::ValidateNumber(QString &n)
 {
+    if(n.length() == 0)
+    {
+        n = "0";
+        return true;
+    }
     n = n.replace(',', '.').replace(' ', "");
     int dotCount = 0;
     for(int i = 0; i < n.length(); i++)
@@ -457,7 +462,7 @@ OVERLOAD_FUNCTION(mod)
         }
 
         // Подбор множителя
-        for(int i = 10; i > 0; i--)
+        for(int i = 9; i > 0; i--)
         {
             mul->Copy(divider);
             mul->mul(i);
@@ -483,6 +488,7 @@ OVERLOAD_FUNCTION(mod)
         if(mainDiv.empty() && divided->number.toULongLong() == 0) break;
     }
 
+    this->setNumber(0);
     this->Normalize();
     delete divider;
     delete divided;
