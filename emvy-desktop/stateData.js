@@ -1,4 +1,4 @@
 .pragma library
 
-var mode = "teacher";
+var mode = "student";
 var teacherModeAvailable = false;

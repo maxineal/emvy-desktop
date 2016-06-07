@@ -78,7 +78,7 @@ Item {
                     right: parent.right
                 }
                 model: ["сложить", "вычесть", "умножить", "разделить"];
-                currentIndex: 3
+                //currentIndex: 3
             }
 
             Label {

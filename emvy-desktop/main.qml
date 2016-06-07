@@ -118,6 +118,24 @@ ApplicationWindow {
                 }
             }
         }
+
+        // Справка
+        Menu
+        {
+            title: qsTr("&Справка")
+
+            MenuItem {
+                id: main_menu_help
+                text: qsTr("&Помощь")
+                shortcut: "F1"
+            }
+
+            MenuItem {
+                id: main_menu_about
+                text: qsTr("&О программе")
+                onTriggered: Main.msgBox("Кодирование информации 1.0\n(Emvy Desktop)\n\nБронников Максим, 2016");
+            }
+        }
     }
 
     Item {
@@ -125,7 +143,7 @@ ApplicationWindow {
         anchors.fill: parent
 
         // Загрузка начального экрана
-        Component.onCompleted: Main.selectQml("arithmetic.qml");
+        Component.onCompleted: Main.selectQml("translateform.qml");
     }
 
     MessageDialog {
